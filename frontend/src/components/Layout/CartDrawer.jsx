@@ -4,7 +4,7 @@ import CartContents from "../Cart/CartContents";
 const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
   return (
     <div
-      className={`fixed right-0 top-0 w-3/4 sm:w-1/2 md:w-[25rem] h-full bg-white shadow-lg transform transition-transform duration-300 flex flex-col z-50 ${
+      className={`fixed right-0 top-0 w-[18rem] sm:w-1/2 md:w-[25rem] h-full bg-white shadow-lg transform transition-transform duration-300 flex flex-col z-50 ${
         drawerOpen ? "translate-x-0" : " translate-x-full"
       }`}
     >
