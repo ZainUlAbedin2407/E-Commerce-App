@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const selectedProduct = {
   name: "Stylish Jacket",
@@ -32,6 +33,12 @@ const ProductDetails = () => {
     if (action === "plus") setQuantity((prev) => prev + 1);
     if (action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
   };
+
+  const handleAddToCart = () => {
+    if (!selectedSize || !selectedColor) {
+      toast.error("Please select a size and color before adding to cart.")
+    }
+  }
 
   useEffect(() => {
     if (selectedProduct?.images?.length > 0) {
@@ -151,7 +158,7 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            <button className="bg-black text-white py-2 px-6 rounded w-full mb-4 cursor-pointer">
+            <button onClick={handleAddToCart} className="bg-black text-white py-2 px-6 rounded w-full mb-4 cursor-pointer">
               ADD TO CART
             </button>
 
