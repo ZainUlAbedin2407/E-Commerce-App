@@ -148,13 +148,6 @@ const NewArrivals = () => {
       }
     };
   }, []);
-  //   useEffect(() => {
-  //     const container = scrollRef.current;
-  //     if (container) {
-  //       container.addEventListener("scroll", updateScrollButtons);
-  //       updateScrollButtons();
-  //     }
-  //   });
 
   return (
     <section className="py-16 px-4 lg:px-0">
