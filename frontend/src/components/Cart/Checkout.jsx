@@ -22,6 +22,7 @@ const cart = {
 };
 const Checkout = () => {
   const navigate = useNavigate();
+  const [checkoutId, setCheckoutId] = useState(null);
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
     lastName: "",
@@ -31,12 +32,32 @@ const Checkout = () => {
     country: "",
     phone: "",
   });
+
+  const handleCreateCheckout = (e) => {
+    e.preventDefault();
+    setCheckoutId(123);
+  };
+
+  // updated with COD option
+  const handlePlaceOrder = () => {
+    const orderData = {
+      shippingAddress,
+      paymentMethod: "cod",
+      shippingFee: 200,
+      cart,
+      orderDate: new Date().toISOString(),
+    };
+
+    console.log("Order Placed:", orderData);
+    navigate("/thank-you");
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter">
       {/* Left Section */}
       <div className="bg-white rounded-lg p-6">
         <h2 className="text-2xl uppercase mb-6">Checkout</h2>
-        <form>
+        <form onSubmit={handleCreateCheckout}>
           <h3 className="text-lg mb-4">Contact Details</h3>
           <div className="mb-4">
             <label className="block text-gray-700">Email</label>
@@ -74,11 +95,154 @@ const Checkout = () => {
                 onChange={(e) =>
                   setShippingAddress({
                     ...shippingAddress,
-                    lasName: e.target.value,
+                    lastName: e.target.value,
                   })
                 }
               />
             </div>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Address</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-200 rounded"
+              required
+              value={shippingAddress.address}
+              onChange={(e) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  address: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-4 grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700">City</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-200 rounded"
+                required
+                value={shippingAddress.city}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    city: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Postal Code</label>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-200 rounded"
+                required
+                value={shippingAddress.postalCode}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    postalCode: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Country</label>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-200 rounded"
+              required
+              value={shippingAddress.country}
+              onChange={(e) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  country: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Phone</label>
+            <input
+              type="tel"
+              className="w-full p-2 border border-gray-200 rounded"
+              required
+              value={shippingAddress.phone}
+              onChange={(e) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  phone: e.target.value,
+                })
+              }
+            />
+          </div>
+          {/* Paypal Method which isn't avaialble in our region so */}
+          {/* <div className="mt-6">
+            {!checkoutId ? (
+              <button
+                type="submit"
+                className="w-full bg-black text-white py-3 rounded"
+              >
+                Continue to Payment
+              </button>
+            ) : (
+              <div>
+                <h3 className="text-lg mb-4">Pay with Paypal</h3>
+                // Paypal component 
+              </div>
+            )}
+          </div> */}
+
+          {/* i replaced it wil COD */}
+          <div className="mt-6">
+            {!checkoutId ? (
+              <button
+                type="submit"
+                className="w-full bg-black text-white py-3 rounded"
+              >
+                Continue to Payment
+              </button>
+            ) : (
+              <div className="mt-6">
+                {/* 🔄 UPDATED: Shipping Method */}
+                <h3 className="text-lg mb-2 font-semibold">Shipping Method</h3>
+                <div className="relative mb-4">
+                  <input
+                    type="text"
+                    value="Standard Shipping"
+                    disabled
+                    className="w-full p-3 pl-4 pr-20 border border-blue-500 bg-blue-100 rounded focus:outline-none text-gray-700 font-medium"
+                  />
+                  <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-semibold">
+                    Rs. 200
+                  </span>
+                </div>
+
+                {/* 🔄 UPDATED: Payment Method */}
+                <h3 className="text-lg mb-2 font-semibold">Payment Method</h3>
+                <p className="text-sm text-gray-500 mb-2">
+                  All transactions are secure and encrypted.
+                </p>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    value="Cash on Delivery (COD)"
+                    disabled
+                    className="w-full p-3 pl-4 border border-blue-500 bg-blue-100 rounded focus:outline-none text-gray-700 font-medium"
+                  />
+                </div>
+
+                {/* 🔄 UPDATED: Confirm Order Button */}
+                <button
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-green-600 text-white py-3 rounded font-semibold hover:bg-green-700 transition"
+                >
+                  Confirm Order
+                </button>
+              </div>
+            )}
           </div>
         </form>
       </div>

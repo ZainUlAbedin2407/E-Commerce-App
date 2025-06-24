@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
 import ProductDetails from "./components/Products/ProductDetails";
 import Checkout from "./components/Cart/Checkout";
+import ThankYou from "./components/Cart/ThankYou";
 function App() {
   return (
     <>
@@ -21,6 +22,7 @@ function App() {
           <Route path="collections/:collection" element={<CollectionPage />} />
           <Route path="product/:id" element={<ProductDetails />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="thank-you" element={<ThankYou />} />
         </Route>
         <Route> {/*Admin Layout*/} </Route>
       </Routes>
