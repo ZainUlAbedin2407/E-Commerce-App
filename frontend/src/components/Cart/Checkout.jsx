@@ -18,6 +18,7 @@ const cart = {
       image: "https://picsum.photos/150?random=2",
     },
   ],
+  deliveryCharges: 1,
   totalPrice: 195,
 };
 const Checkout = () => {
@@ -245,6 +246,45 @@ const Checkout = () => {
             )}
           </div>
         </form>
+      </div>
+
+      {/* Right Section */}
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <h3 className="text-lg mb-4">Order Summary</h3>
+        <div className="border-t border-gray-200 py-4 mb-4">
+          {cart.products.map((product, idx) => (
+            <div
+              className="flex items-start justify-between  py-2 border-b border-gray-200"
+              key={idx}
+            >
+              <div className="flex items-start">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-20 h-24 object-cover mr-4"
+                />
+                <div>
+                  <h3 className="text-md">{product.name}</h3>
+                  <p className="text-gray-500">Size: {product.size}</p>
+                  <p className="text-gray-500">Color: {product.color}</p>
+                </div>
+              </div>
+              <p className="text-xl">${product.price?.toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between items-center text-lg mb-4">
+          <p>Subtotal</p>
+          <p>${cart.totalPrice?.toLocaleString()}</p>
+        </div>
+        <div className="flex justify-between items-center text-lg">
+          <p>Shipping</p>
+          <p>${cart.deliveryCharges}</p>
+        </div>
+        <div className="flex justify-between items-center text-lg border-t border-gray-200 pt-4">
+          <p>Total</p>
+          <p> ${(cart.totalPrice + cart.deliveryCharges)?.toLocaleString()} </p>
+        </div>
       </div>
     </div>
   );
