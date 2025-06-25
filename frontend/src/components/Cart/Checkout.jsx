@@ -59,7 +59,7 @@ const Checkout = () => {
       <div className="bg-white rounded-lg p-6">
         <h2 className="text-2xl uppercase mb-6">Checkout</h2>
         <form onSubmit={handleCreateCheckout}>
-          <h3 className="text-lg mb-4">Contact Details</h3>
+          <h3 className="text-lg mb-2 font-semibold">Contact Details</h3>
           <div className="mb-4">
             <label className="block text-gray-700">Email</label>
             <input
@@ -69,7 +69,7 @@ const Checkout = () => {
               disabled
             />
           </div>
-          <h3 className="text-lg mb-4">Delivery</h3>
+          <h3 className="text-lg mb-2 font-semibold">Delivery</h3>
           <div className="mb-4 grid grid-cols-2 gap-4">
             <div>
               <label className="block text-gray-700">First Name</label>
@@ -196,7 +196,7 @@ const Checkout = () => {
             )}
           </div> */}
 
-          {/* i replaced it wil COD */}
+          {/* i replaced it by COD */}
           <div className="mt-6">
             {!checkoutId ? (
               <button
