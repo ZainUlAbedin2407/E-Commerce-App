@@ -24,7 +24,7 @@ const Navbar = () => {
       <nav className="container mx-auto flex items-center justify-between py-4 px-6">
         {/* Left Logo */}
         <div>
-          <Link to="/" className="text-2xl font-medium">
+          <Link to="/" className="text-2xl font-medium whitespace-nowrap">
             Tech Ture
           </Link>
         </div>
@@ -57,6 +57,12 @@ const Navbar = () => {
         </div>
         {/* Right - Icons */}
         <div className="flex items-center space-x-4">
+          <Link
+            to="/admin"
+            className="hidden md:block bg-black px-2 rounded text-sm text-white"
+          >
+            Admin
+          </Link>
           <Link to="/profile" className="text-black">
             <HiOutlineUser className="h-6 w-6 text-gray-700" />
           </Link>
@@ -122,6 +128,12 @@ const Navbar = () => {
               className="block text-gray-600 hover:text-black"
             >
               Bottom Wear
+            </Link>
+            <Link
+              to="/admin"
+              className="w-15 block md:hidden bg-black px-2 rounded text-sm text-white"
+            >
+              Admin
             </Link>
           </nav>
         </div>
