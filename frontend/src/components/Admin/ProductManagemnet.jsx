@@ -38,7 +38,6 @@ const ProductManagemnet = () => {
       price: 110,
       sku: "123123123",
     },
-    
   ];
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
