@@ -1,0 +1,45 @@
+/* Fonts are bundled from npm (@fontsource) so the build never needs to
+   fetch Google Fonts at build time — next/font/google failed in this
+   environment even though the registry works. Same families as the plan:
+   Poppins headings, Inter body. */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
+@import "tailwindcss";
+
+/* AI Communication brand tokens — locked from the shop banner / profile picture.
+   Orange #FF7A1A is the only accent. The old template red is gone. */
+@theme {
+  --color-brand-orange: #ff7a1a;
+  --color-brand-orange-dark: #e56a0d;
+  --color-brand-black: #111418;
+  --color-brand-ink: #1a1d21;
+  --color-brand-charcoal: #23282e;
+  --color-brand-cream: #f5f1e8;
+  --color-brand-paper: #f5f3ef;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", "Inter", ui-sans-serif, sans-serif;
+}
+
+body {
+  background-color: var(--color-brand-paper);
+  color: var(--color-brand-ink);
+  font-family: var(--font-sans);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
