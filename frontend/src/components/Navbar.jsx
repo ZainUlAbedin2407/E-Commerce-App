@@ -112,7 +112,7 @@ export default function Navbar() {
               alt="AI Communication"
               width={503}
               height={337}
-              className="h-8 w-auto md:h-10"
+              className="h-10 w-auto md:h-12"
               priority
             />
             <span className="hidden font-display text-lg font-extrabold uppercase leading-tight tracking-wide text-ink sm:block">
