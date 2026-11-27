@@ -303,6 +303,7 @@ export async function getCatalogProducts({
       const sortMap = {
         featured: { isFeatured: -1, createdAt: -1 },
         newest: { createdAt: -1 },
+        name: { name: 1 },
         nameAsc: { name: 1 },
         nameDesc: { name: -1 },
         "price-asc": { pricePKR: 1, createdAt: -1 },
@@ -352,6 +353,14 @@ export async function getCatalogProducts({
         matched = [...matched].sort(
           (a, b) => (units.get(b.slug) || 0) - (units.get(a.slug) || 0)
         );
+      }
+      // Name sorts are case-insensitive (localeCompare). MongoDB sorts
+      // "i20" after "SY-777" (lowercase sorts after uppercase), which
+      // reads as a broken sort. This matches the seed path below.
+      if (sort === "name" || sort === "nameAsc") {
+        matched = [...matched].sort((a, b) => a.name.localeCompare(b.name));
+      } else if (sort === "nameDesc") {
+        matched = [...matched].sort((a, b) => b.name.localeCompare(a.name));
       }
       // A manual collection keeps its picked order under the default sort.
       if (manualIds && (!sort || sort === "featured")) {

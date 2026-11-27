@@ -27,11 +27,21 @@ export default function NewArrivals({ products, title = "New Arrivals" }) {
     scrollRef.current?.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
   };
 
+  // A short row fills its width instead of leaving a large empty area:
+  // two cards take half the row each, three take a third, four or more
+  // keep the scrolling row. Arrows only show when there is more to scroll.
+  const shortRow = list.length <= 3;
+  const cardWidth = shortRow
+    ? list.length <= 2
+      ? "w-[70%] shrink-0 sm:w-[45%] lg:w-[48%] xl:w-[48%]"
+      : "w-[70%] shrink-0 sm:w-[45%] lg:w-[31%] xl:w-[31%]"
+    : "w-[70%] shrink-0 sm:w-[45%] lg:w-[31%] xl:w-[23%]";
+
   return (
     <section className="px-5 py-12 md:px-12">
       <div className="mb-6 flex items-end justify-between gap-4">
         <h2 className="font-display text-3xl font-bold text-ink">{title}</h2>
-        <div className="hidden gap-2 md:flex">
+        <div className={`hidden gap-2 md:flex ${shortRow ? "md:hidden" : ""}`}>
           <button
             onClick={() => scroll("left")}
             disabled={!canLeft}
@@ -56,7 +66,7 @@ export default function NewArrivals({ products, title = "New Arrivals" }) {
         className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"
       >
         {list.map((product) => (
-          <div key={product.id || product.slug} className="w-[70%] shrink-0 sm:w-[45%] lg:w-[31%] xl:w-[23%]">
+          <div key={product.id || product.slug} className={cardWidth}>
             <ProductCard product={product} />
           </div>
         ))}

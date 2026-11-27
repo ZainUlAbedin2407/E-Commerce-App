@@ -41,8 +41,8 @@ function SpeakerComparison({ products }) {
     <section className="px-5 py-12 md:px-12">
       <h2 className="font-display text-3xl font-bold text-ink">Which speaker fits you</h2>
       <p className="mt-3 max-w-[66ch] text-muted">
-        The same three speakers, compared on the same points. Prices and
-        specs are the ones on each product page.
+        The speakers, compared on the same points. Prices and specs are the
+        ones on each product page.
       </p>
       <div className="mt-6 overflow-x-auto rounded-2xl border border-line bg-surface">
         <table className="w-full min-w-[560px] text-left text-sm">
