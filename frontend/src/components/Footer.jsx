@@ -42,7 +42,7 @@ export default function Footer() {
               className="h-10 w-auto"
             />
             <span className="font-display text-lg font-extrabold uppercase leading-tight tracking-wide text-ink">
-              AI <span className="text-battery">Communication</span>
+              <span className="text-battery">Communication</span>
             </span>
           </Link>
           <p className="mt-2 text-sm text-muted">Smart Gadgets &amp; Gear</p>

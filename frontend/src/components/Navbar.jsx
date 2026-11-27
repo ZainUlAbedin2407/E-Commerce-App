@@ -116,7 +116,7 @@ export default function Navbar() {
               priority
             />
             <span className="hidden font-display text-lg font-extrabold uppercase leading-tight tracking-wide text-ink sm:block">
-              AI <span className="text-battery">Communication</span>
+              <span className="text-battery">Communication</span>
               <span className="block text-[10px] font-semibold tracking-[0.18em] text-muted">
                 Smart Gadgets &amp; Gear
               </span>
