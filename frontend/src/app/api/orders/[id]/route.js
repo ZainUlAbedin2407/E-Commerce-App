@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { connectDB, isDbConfigured } from "@/lib/mongodb";
 import Order from "@/models/Order";
-import { json, jsonError, dbNotConfiguredError } from "@/lib/api-helpers";
+import { json, jsonError, dbNotConfiguredError, dbErrorResponse } from "@/lib/api-helpers";
 import { requireAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -19,15 +19,19 @@ export async function GET(request, { params }) {
   if (error) return error;
   if (!isDbConfigured()) return dbNotConfiguredError();
   const { id } = await params;
-  await connectDB();
-  let order = await Order.findOne({ orderNo: id });
-  if (!order && mongoose.Types.ObjectId.isValid(id)) {
-    order = await Order.findById(id);
+  try {
+    await connectDB();
+    let order = await Order.findOne({ orderNo: id });
+    if (!order && mongoose.Types.ObjectId.isValid(id)) {
+      order = await Order.findById(id);
+    }
+    if (!order) return jsonError("Order not found.", 404);
+    const isOwner = order.userId && String(order.userId) === user.id;
+    if (!isOwner && user.role !== "admin") {
+      return jsonError("You can only view your own orders.", 403);
+    }
+    return json({ order: serialize(order) });
+  } catch (err) {
+    return dbErrorResponse(err);
   }
-  if (!order) return jsonError("Order not found.", 404);
-  const isOwner = order.userId && String(order.userId) === user.id;
-  if (!isOwner && user.role !== "admin") {
-    return jsonError("You can only view your own orders.", 403);
-  }
-  return json({ order: serialize(order) });
 }

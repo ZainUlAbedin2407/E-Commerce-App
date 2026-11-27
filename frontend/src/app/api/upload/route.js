@@ -1,11 +1,39 @@
 import { json, jsonError } from "@/lib/api-helpers";
 import { requireAdmin } from "@/lib/auth";
 import { isCloudinaryConfigured, uploadImageBuffer } from "@/lib/cloudinary";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+
+// Magic-byte check (audit L7): the client-supplied MIME type is not
+// trusted. Only real JPEG, PNG or WebP files are accepted — an SVG (or a
+// script renamed .jpg) is rejected before it reaches Cloudinary.
+function imageKind(buf) {
+  if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff)
+    return "jpeg";
+  if (
+    buf.length >= 8 &&
+    buf[0] === 0x89 &&
+    buf[1] === 0x50 &&
+    buf[2] === 0x4e &&
+    buf[3] === 0x47 &&
+    buf[4] === 0x0d &&
+    buf[5] === 0x0a &&
+    buf[6] === 0x1a &&
+    buf[7] === 0x0a
+  )
+    return "png";
+  if (
+    buf.length >= 12 &&
+    buf.toString("ascii", 0, 4) === "RIFF" &&
+    buf.toString("ascii", 8, 12) === "WEBP"
+  )
+    return "webp";
+  return null;
+}
 
 // POST /api/upload — admin only. multipart/form-data with a "file" field.
 // Image files only, max 5 MB, uploaded to Cloudinary. Returns { url }.
@@ -13,8 +41,15 @@ const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 // the admin form shows that message and offers a labelled manual-URL
 // fallback instead. A raw URL is never silently accepted as an upload.
 export async function POST(request) {
-  const { error } = requireAdmin(request);
+  const { error } = await requireAdmin(request);
   if (error) return error;
+  // Audit H3: 20 uploads per minute per IP (admin only, but still bounded).
+  const rl = rateLimit(`upload:${clientIp(request)}`, { limit: 20, windowMs: 60_000 });
+  if (!rl.ok) {
+    return jsonError("Too many requests. Please try again shortly.", 429, {
+      code: "rate_limited",
+    });
+  }
   if (!isCloudinaryConfigured()) {
     return json(
       {
@@ -44,6 +79,9 @@ export async function POST(request) {
   }
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
+    if (!imageKind(buffer)) {
+      return jsonError("Only JPEG, PNG or WebP photos are allowed.", 400);
+    }
     const url = await uploadImageBuffer(buffer, file.name || "product.jpg");
     return json({ url }, 201);
   } catch (err) {

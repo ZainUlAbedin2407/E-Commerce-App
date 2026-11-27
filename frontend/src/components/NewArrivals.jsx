@@ -1,133 +1,63 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { getNewProducts } from "@/lib/products";
-import PriceTag from "./PriceTag";
+import ProductCard from "./ProductCard";
 
+// Horizontal product row, used for Best Sellers and New Arrivals.
 // `products` comes from the catalogue (DB or seed) via the home page.
-export default function NewArrivals({ products }) {
+// Dark cards, square cover images, skeleton-free: the parent hides the
+// whole row when the list is empty, so this never renders an empty row.
+export default function NewArrivals({ products, title = "New Arrivals" }) {
   const scrollRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(true);
+  const list = products || getNewProducts();
+  if (!list || list.length === 0) return null;
 
-  const newArrivals = products || getNewProducts();
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
+  const update = () => {
+    const c = scrollRef.current;
+    if (!c) return;
+    setCanLeft(c.scrollLeft > 0);
+    setCanRight(c.scrollLeft < c.scrollWidth - c.clientWidth - 1);
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
+  const scroll = (dir) => {
+    scrollRef.current?.scrollBy({ left: dir === "left" ? -320 : 320, behavior: "smooth" });
   };
-
-  const handleMouseUpOrLeave = () => setIsDragging(false);
-
-  const scroll = (direction) => {
-    const scrollAmount = direction === "left" ? -300 : 300;
-    scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-  };
-
-  const updateScrollButtons = () => {
-    const container = scrollRef.current;
-    if (container) {
-      setCanScrollLeft(container.scrollLeft > 0);
-      setCanScrollRight(
-        container.scrollLeft < container.scrollWidth - container.clientWidth - 1
-      );
-    }
-  };
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    container.addEventListener("scroll", updateScrollButtons);
-    window.addEventListener("resize", updateScrollButtons);
-    updateScrollButtons();
-    return () => {
-      container.removeEventListener("scroll", updateScrollButtons);
-      window.removeEventListener("resize", updateScrollButtons);
-    };
-  }, []);
 
   return (
-    <section className="px-4 py-16 lg:px-0">
-      <div className="container relative mx-auto mb-10 text-center">
-        <h2 className="mb-4 font-display text-3xl font-bold uppercase tracking-wide text-brand-black">
-          New Arrivals
-        </h2>
-        <p className="mb-8 text-sm text-gray-600 lg:text-lg">
-          Fresh stock at AI Communication — original products, sealed pack.
-        </p>
-        <div className="z-10 flex justify-end gap-2 lg:absolute lg:bottom-[-35px] lg:right-0">
+    <section className="px-5 py-12 md:px-12">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <h2 className="font-display text-3xl font-bold text-ink">{title}</h2>
+        <div className="hidden gap-2 md:flex">
           <button
             onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
+            disabled={!canLeft}
             aria-label="Scroll left"
-            className={`rounded border border-gray-200 p-2 transition-colors duration-300 ${
-              canScrollLeft
-                ? "cursor-pointer bg-white text-black"
-                : "cursor-not-allowed bg-gray-200 text-gray-400"
-            }`}
+            className="press flex min-h-12 min-w-12 items-center justify-center rounded-full border border-line bg-surface text-ink disabled:opacity-40"
           >
             <FiChevronLeft className="text-2xl" />
           </button>
           <button
             onClick={() => scroll("right")}
-            disabled={!canScrollRight}
+            disabled={!canRight}
             aria-label="Scroll right"
-            className={`rounded border border-gray-200 p-2 transition-colors duration-300 ${
-              canScrollRight
-                ? "cursor-pointer bg-white text-black"
-                : "cursor-not-allowed bg-gray-200 text-gray-400"
-            }`}
+            className="press flex min-h-12 min-w-12 items-center justify-center rounded-full border border-line bg-surface text-ink disabled:opacity-40"
           >
             <FiChevronRight className="text-2xl" />
           </button>
         </div>
       </div>
-
       <div
         ref={scrollRef}
-        className={`container mx-auto flex space-x-6 overflow-x-auto scrollbar-hide ${
-          isDragging ? "cursor-grabbing" : "cursor-grab"
-        }`}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUpOrLeave}
-        onMouseLeave={handleMouseUpOrLeave}
+        onScroll={update}
+        className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"
       >
-        {newArrivals.map((product) => (
-          <div
-            key={product.id}
-            className="relative min-w-[100%] sm:min-w-[50%] lg:min-w-[30%]"
-          >
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              width={600}
-              height={500}
-              className="h-[500px] w-full rounded-lg object-cover"
-              draggable={false}
-            />
-            <div className="absolute inset-x-0 bottom-0 rounded-b-lg p-4 text-white backdrop-blur-md">
-              <Link href={`/product/${product.slug}`} className="block">
-                <h4 className="font-medium">{product.name}</h4>
-              </Link>
-              <div className="mt-1">
-                <PriceTag product={product} />
-              </div>
-            </div>
+        {list.map((product) => (
+          <div key={product.id || product.slug} className="w-[70%] shrink-0 sm:w-[45%] lg:w-[31%] xl:w-[23%]">
+            <ProductCard product={product} />
           </div>
         ))}
       </div>

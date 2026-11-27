@@ -15,10 +15,10 @@ export default function NewProductPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h2 className="mb-2 font-display text-2xl font-bold">Add Product</h2>
-      <p className="mb-6 text-sm text-gray-600">
-        The product goes live on the shop as soon as you save it — no code, no
-        redeploy. Leave the price empty if the price is &ldquo;WhatsApp for price&rdquo;.
+      <h2 className="mb-2 font-display text-2xl font-bold text-ink">Add Product</h2>
+      <p className="mb-6 text-sm text-muted">
+        The product goes live on the shop as soon as you save it. No code, no
+        redeploy. Give it a real price, real weight and real specs.
       </p>
       <AdminProductForm onSave={handleSave} />
     </div>

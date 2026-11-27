@@ -32,8 +32,20 @@ export async function connectDB() {
   }
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(uri, { bufferCommands: false, maxPoolSize: 10 })
+      .connect(uri, {
+        bufferCommands: false,
+        maxPoolSize: 10,
+        // Audit H8: the driver default waits up to 30s on a hung Atlas
+        // endpoint. Fail fast so a cold start stalls for seconds, not 30s.
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 30000,
+      })
       .then((m) => m);
+    // A failed connect must not poison the cache: clear the rejected
+    // promise so the next request retries instead of re-throwing forever.
+    cached.promise.catch(() => {
+      cached.promise = null;
+    });
   }
   cached.conn = await cached.promise;
   return cached.conn;

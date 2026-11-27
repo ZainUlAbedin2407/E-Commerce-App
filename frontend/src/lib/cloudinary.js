@@ -27,12 +27,16 @@ function configure() {
   });
 }
 
-export function uploadImageBuffer(buffer, filename = "product.jpg") {
+export function uploadImageBuffer(
+  buffer,
+  filename = "product.jpg",
+  folder = "ai-communication/products"
+) {
   configure();
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: "ai-communication/products",
+        folder,
         resource_type: "image",
         public_id: undefined,
         filename_override: filename,

@@ -1,36 +1,50 @@
 /* Fonts are bundled from npm (@fontsource) so the build never needs to
-   fetch Google Fonts at build time — next/font/google failed in this
-   environment even though the registry works. Same families as the plan:
-   Poppins headings, Inter body. */
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
-@import "@fontsource/poppins/400.css";
-@import "@fontsource/poppins/500.css";
-@import "@fontsource/poppins/600.css";
-@import "@fontsource/poppins/700.css";
-@import "@fontsource/poppins/800.css";
+   fetch Google Fonts at build time. V3 (plan §2.2): Archivo display +
+   Manrope body, kept from V2. Inter/Poppins are gone. */
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+@import "@fontsource/archivo/500.css";
+@import "@fontsource/archivo/600.css";
+@import "@fontsource/archivo/700.css";
+@import "@fontsource/archivo/800.css";
+@import "@fontsource/archivo/900.css";
 @import "tailwindcss";
 
-/* AI Communication brand tokens — locked from the shop banner / profile picture.
-   Orange #FF7A1A is the only accent. The old template red is gone. */
+/* AI Communication V3 tokens (plan §2.1, §2.2) — dark-first.
+   Canvas is the charcoal from the dark logo (#282B30 family, deepened
+   to #1A1D21). Ink is the cream "A" (#F5F1E8). Battery orange #FF7A1A
+   is the one bright accent: primary CTA, price, active states. The V2
+   tokens (paper, ember, ember-deep, signal, brand-*) are gone. */
 @theme {
-  --color-brand-orange: #ff7a1a;
-  --color-brand-orange-dark: #e56a0d;
-  --color-brand-black: #111418;
-  --color-brand-ink: #1a1d21;
-  --color-brand-charcoal: #23282e;
-  --color-brand-cream: #f5f1e8;
-  --color-brand-paper: #f5f3ef;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Poppins", "Inter", ui-sans-serif, sans-serif;
+  --color-canvas: #1a1d21;
+  --color-surface: #23282e;
+  --color-raised: #2a2e33;
+  --color-ink: #f5f1e8;
+  --color-muted: #a8a29a;
+  --color-line: #34383e;
+  --color-battery: #ff7a1a;
+  --color-battery-deep: #e56a0d;
+  --color-success: #4ade80;
+  --color-danger: #f87171;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", "Manrope", ui-sans-serif, sans-serif;
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
-  background-color: var(--color-brand-paper);
-  color: var(--color-brand-ink);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* WCAG 2.4.7: every interactive element gets a visible focus ring.
+   Never use focus:outline-none without a replacement ring. */
+:focus-visible {
+  outline: 2px solid var(--color-battery);
+  outline-offset: 2px;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -42,4 +56,80 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* ---- V3 motion (plan §2.2, §2.4). One easing curve, transform and
+   opacity only, 200ms for interactions. No motion library. ---- */
+
+/* Button press: scale 0.97 while active. */
+.press {
+  transition: transform 200ms var(--ease-brand);
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Card image zoom on hover. Apply to the card; the img inside scales. */
+.card-zoom img {
+  transition: transform 240ms var(--ease-brand);
+}
+.card-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* Skeleton shimmer for loading states (plan §2.4: skeletons, not spinners).
+   A plain opacity pulse, no gradient. */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.skeleton {
+  background-color: var(--color-raised);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+/* Scroll reveal, for at most 2-3 key blocks (hero, social proof, offer).
+   Never on every section. */
+.reveal {
+  animation: reveal-in 560ms var(--ease-brand) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 60%;
+}
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Drawer and slide transitions (cart drawer, mobile menu). Transform only. */
+.drawer-slide {
+  transition: transform 200ms var(--ease-brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press,
+  .card-zoom img,
+  .drawer-slide {
+    transition: none;
+  }
+  .press:active,
+  .card-zoom:hover img {
+    transform: none;
+  }
+  .skeleton {
+    animation: none;
+  }
+  .reveal {
+    animation: none;
+  }
 }

@@ -4,6 +4,9 @@ import { CATEGORIES, getProductsByCategory } from "@/lib/products";
 
 // `tiles` comes from the catalogue (DB or seed) via the home page:
 // [{ slug, name, blurb, count, cover }]. Without it, the seed is used.
+// Edge-to-edge, alternating charcoal tones, zero gap. The color change
+// is the break, not a border or a margin. No light tiles. An empty
+// category renders as a "Coming soon" tile, never a fake photo.
 export default function CategoryTiles({ tiles }) {
   const list =
     tiles ||
@@ -17,44 +20,50 @@ export default function CategoryTiles({ tiles }) {
     });
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <h2 className="mb-8 text-center font-display text-3xl font-bold uppercase tracking-wide text-brand-black">
-        Shop by Category
+    <section aria-label="Shop by category" className="w-full">
+      <h2 className="px-5 pt-10 pb-6 font-display text-3xl font-bold text-ink md:px-12">
+        Shop by category
       </h2>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-        {list.map((category) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        {list.map((category, i) => (
           <Link
             key={category.slug}
             href={`/collections/${category.slug}`}
-            className="group relative block overflow-hidden rounded-lg bg-brand-charcoal"
+            className={`group relative block overflow-hidden ${
+              i % 2 === 0 ? "bg-surface" : "bg-raised"
+            }`}
           >
-            <div className="relative aspect-[4/3] w-full">
-              {category.cover ? (
-                <Image
-                  src={category.cover}
-                  alt={category.name}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                  className="object-cover opacity-90 transition duration-300 group-hover:scale-105 group-hover:opacity-100"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-brand-paper">
-                  <span className="px-4 text-center font-display text-lg font-bold text-brand-black">
-                    {category.name}
-                  </span>
+            {category.cover ? (
+              <>
+                <div className="relative aspect-square w-full">
+                  <Image
+                    src={category.cover}
+                    alt={category.name}
+                    fill
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    className="object-cover opacity-90 transition duration-200 group-hover:scale-105 group-hover:opacity-100"
+                  />
                 </div>
-              )}
-            </div>
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-black/85 to-transparent p-4 pt-10">
-              <h3 className="font-display text-lg font-bold uppercase text-white">
-                {category.name}
-              </h3>
-              <p className="text-sm text-brand-cream">
-                {category.count > 0
-                  ? `${category.count} product${category.count > 1 ? "s" : ""} · ${category.blurb}`
-                  : `Coming soon — new products are added from the admin panel`}
-              </p>
-            </div>
+                <div className="absolute inset-x-0 bottom-0 bg-canvas/70 p-4">
+                  <h3 className="font-display text-base font-bold text-ink">
+                    {category.name}
+                  </h3>
+                  <p className="text-xs text-muted">
+                    {category.count} product{category.count === 1 ? "" : "s"}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex aspect-square w-full flex-col items-center justify-center gap-2 p-4 text-center">
+                <h3 className="font-display text-base font-bold text-ink">
+                  {category.name}
+                </h3>
+                <span className="rounded-full bg-battery px-2 py-0.5 text-xs font-bold text-canvas">
+                  Coming soon
+                </span>
+                <p className="line-clamp-2 text-xs text-muted">{category.blurb}</p>
+              </div>
+            )}
           </Link>
         ))}
       </div>

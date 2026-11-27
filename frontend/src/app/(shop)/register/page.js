@@ -29,7 +29,7 @@ export default function RegisterPage() {
         setError(
           data.error ||
             (data.code === "db_not_configured"
-              ? "Accounts are not connected yet — the database is not configured."
+              ? "Accounts are not connected yet, the database is not configured."
               : "Registration failed. Try again.")
         );
         return;
@@ -43,90 +43,62 @@ export default function RegisterPage() {
     }
   };
 
+  const input =
+    "min-h-12 w-full rounded-xl border border-line bg-raised p-3 text-base text-ink placeholder:text-muted";
+
   return (
     <div className="flex">
       <div className="flex w-full flex-col items-center justify-center p-8 md:w-1/2 md:p-12">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-sm"
+          className="w-full max-w-md rounded-2xl border border-line bg-surface p-8"
         >
           <div className="mb-6 flex justify-center">
             <Image
-              src="/brand-logo-dark.png"
+              src="/logo-ai-dark.png"
               alt="AI Communication"
-              width={72}
-              height={72}
-              className="h-16 w-16 rounded-lg object-cover"
+              width={503}
+              height={337}
+              className="h-16 w-auto rounded-lg"
             />
           </div>
-          <h2 className="mb-6 text-center font-display text-2xl font-bold">Register</h2>
-          <p className="mb-6 text-center text-gray-600">
+          <h2 className="mb-6 text-center font-display text-2xl font-bold text-ink">Register</h2>
+          <p className="mb-6 text-center text-muted">
             Enter your name, email and password to register.
           </p>
           {error && (
-            <p className="mb-4 rounded bg-red-50 p-3 text-sm font-medium text-red-700">
+            <p className="mb-4 rounded-xl border border-danger bg-raised p-3 text-sm font-medium text-danger">
               {error}
             </p>
           )}
           <div className="mb-4">
-            <label htmlFor="name" className="mb-2 block text-sm font-semibold">Name</label>
-            <input
-              id="name"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
-              placeholder="Enter your Name"
-            />
+            <label htmlFor="name" className="mb-2 block text-sm font-semibold text-ink">Name</label>
+            <input id="name" type="text" required value={name} onChange={(e) => setName(e.target.value)} className={input} placeholder="Enter your name" />
           </div>
           <div className="mb-4">
-            <label htmlFor="email" className="mb-2 block text-sm font-semibold">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
-              placeholder="Enter your email address"
-            />
+            <label htmlFor="email" className="mb-2 block text-sm font-semibold text-ink">Email</label>
+            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={input} placeholder="Enter your email address" />
           </div>
           <div className="mb-4">
-            <label htmlFor="phone" className="mb-2 block text-sm font-semibold">
-              Phone (WhatsApp) — optional
+            <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-ink">
+              Phone (optional)
             </label>
-            <input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
-              placeholder="03XX-XXXXXXX"
-            />
+            <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={input} placeholder="03XX-XXXXXXX" />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="mb-2 block text-sm font-semibold">Password</label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
-              placeholder="At least 8 characters"
-            />
+            <label htmlFor="password" className="mb-2 block text-sm font-semibold text-ink">Password</label>
+            <input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={input} placeholder="At least 8 characters" />
           </div>
           <button
             type="submit"
             disabled={busy}
-            className="w-full cursor-pointer rounded-lg bg-brand-black p-2 font-semibold text-white transition hover:bg-brand-charcoal disabled:opacity-60"
+            className="press min-h-12 w-full cursor-pointer rounded-full bg-battery p-2 font-semibold text-canvas transition hover:bg-battery-deep disabled:opacity-60"
           >
             {busy ? "Creating account…" : "Sign Up"}
           </button>
-          <p className="mt-6 text-center text-sm">
+          <p className="mt-6 text-center text-sm text-muted">
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-brand-orange">
+            <Link href="/login" className="font-semibold text-battery">
               Login
             </Link>
           </p>
@@ -135,7 +107,7 @@ export default function RegisterPage() {
       <div className="hidden w-1/2 md:block">
         <Image
           src="/brand-banner.jpg"
-          alt="AI Communication — Smart Gadgets & Gear, Saddar, Karachi"
+          alt="AI Communication, Smart Gadgets and Gear, Saddar, Karachi"
           width={1344}
           height={756}
           className="h-[750px] w-full object-cover"

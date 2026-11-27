@@ -1,45 +1,51 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SHOP_ADDRESS, WHATSAPP_NUMBER, whatsappLink } from "@/lib/site";
+import { getProduct } from "@/lib/products";
+import { SHOP_ADDRESS } from "@/lib/site";
+import PriceTag from "./PriceTag";
 
-// Fix 2026-11-26: the banner image already contains the "AI COMMUNICATION"
-// text, so NO text is overlaid on top of it — the old overlay duplicated the
-// banner text and the two layers collided. The banner is shown clean, and
-// the headline + buttons live in the dark band underneath it.
-export default function Hero() {
+// Hero: one product, one line, one CTA. Full-bleed dark, battery-orange
+// pill primary plus an outlined cream ghost secondary. The hero product
+// comes from the homepage hero section; the DV-1089 is the fallback.
+export default function Hero({ product }) {
+  const hero = product || getProduct("dv-1089");
+  if (!hero) return null;
   return (
-    <section className="w-full">
-      <Image
-        src="/brand-banner.jpg"
-        alt="AI Communication — Smart Gadgets & Gear, Shahjahan Electronics Market, Saddar, Karachi"
-        width={1344}
-        height={756}
-        className="h-[360px] w-full object-cover object-center md:h-[480px]"
-        priority
-      />
-      <div className="bg-brand-charcoal px-6 py-10 text-center text-white md:py-12">
-        <h1 className="mb-3 font-display text-3xl font-bold uppercase tracking-wide md:text-5xl">
-          Original Accessories, Delivered Across Pakistan
-        </h1>
-        <p className="mb-2 text-sm tracking-[0.2em] text-brand-cream/80 md:text-base">
-          EARBUDS &bull; SMARTWATCHES &bull; POWER BANKS &bull; SPEAKERS &bull; FAST CHARGERS
-        </p>
-        <p className="mb-6 text-sm text-brand-cream/70">{SHOP_ADDRESS}</p>
-        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href="/collections/all"
-            className="rounded bg-brand-orange px-6 py-3 text-lg font-semibold text-white transition hover:bg-brand-orange-dark"
-          >
-            Shop Now
-          </Link>
-          <a
-            href={whatsappLink("Assalam-o-Alaikum AI Communication! Mujhe order karna hai.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded border border-white bg-white/10 px-6 py-3 text-lg font-semibold text-white transition hover:bg-white/20"
-          >
-            WhatsApp {WHATSAPP_NUMBER}
-          </a>
+    <section className="w-full bg-canvas">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 px-5 py-12 md:px-12 md:py-20 lg:grid-cols-2">
+        <div className="reveal">
+          <h1 className="font-display text-4xl font-extrabold leading-tight text-ink md:text-6xl">
+            {hero.name}
+          </h1>
+          <p className="mt-4 max-w-[66ch] text-lg text-muted">{hero.shortDesc}</p>
+          <div className="mt-4">
+            <PriceTag product={hero} size="lg" />
+          </div>
+          <p className="mt-2 text-sm text-muted">{SHOP_ADDRESS}</p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={`/product/${hero.slug}`}
+              className="press inline-flex min-h-12 items-center justify-center rounded-full bg-battery px-8 py-3 text-lg font-semibold text-canvas hover:bg-battery-deep"
+            >
+              Shop this speaker
+            </Link>
+            <Link
+              href="/collections/all"
+              className="press inline-flex min-h-12 items-center justify-center rounded-full border border-ink/60 px-8 py-3 text-lg font-semibold text-ink hover:border-ink"
+            >
+              Browse all products
+            </Link>
+          </div>
+        </div>
+        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-raised">
+          <Image
+            src={hero.images[0]}
+            alt={hero.name}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+            priority
+          />
         </div>
       </div>
     </section>

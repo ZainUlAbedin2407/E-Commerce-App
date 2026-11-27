@@ -1,40 +1,73 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PRODUCTS, formatPrice, getCategory } from "@/lib/products";
+import { formatPrice, getCategory, CATEGORIES } from "@/lib/products";
+import { btnGhost, btnPrimary, cardCls, DeleteButton, inputCls, Notice } from "@/components/AdminUI";
 
 export default function ProductManagementPage() {
   const [products, setProducts] = useState(null);
+  const [brands, setBrands] = useState([]);
   const [dbConnected, setDbConnected] = useState(false);
+  const [notConfigured, setNotConfigured] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [deleting, setDeleting] = useState("");
+  const [search, setSearch] = useState("");
+  const [brandFilter, setBrandFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const load = () => {
-    fetch("/api/admin/products")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.products) {
-          setProducts(data.products);
-          setDbConnected(true);
-        } else {
-          setProducts(PRODUCTS);
+    setError("");
+    setNotConfigured(false);
+    fetch("/api/admin/products?limit=100")
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          if (data.code === "db_not_configured") setNotConfigured(true);
+          else setError(data.error || "Could not load products.");
+          setProducts([]);
+          setDbConnected(false);
+          return;
         }
+        setProducts(data.products || []);
+        setDbConnected(true);
       })
-      .catch(() => setProducts(PRODUCTS));
+      .catch(() => {
+        setError("Could not load products. Check your connection.");
+        setProducts([]);
+        setDbConnected(false);
+      });
   };
 
   useEffect(load, []);
+  useEffect(() => {
+    fetch("/api/admin/brands")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.brands) setBrands(data.brands);
+      })
+      .catch(() => {});
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return (products || []).filter((p) => {
+      if (brandFilter && String(p.brandId || "") !== brandFilter && (p.brand || "") !== brandFilter) return false;
+      if (categoryFilter && p.category !== categoryFilter) return false;
+      if (!q) return true;
+      return [p.name, p.model, p.brand, p.slug].join(" ").toLowerCase().includes(q);
+    });
+  }, [products, search, brandFilter, categoryFilter]);
 
   const handleDelete = async (product) => {
     if (!dbConnected) return;
-    const label = product.name || product.slug;
-    if (!window.confirm(`Delete "${label}"? This cannot be undone.`)) return;
-    setDeleting(product._id || product.slug);
+    setDeleting(product.id || product.slug);
     setError("");
+    setNotice("");
     try {
       const res = await fetch(
-        `/api/admin/products/${encodeURIComponent(product._id || product.slug)}`,
+        `/api/admin/products/${encodeURIComponent(product.id || product.slug)}`,
         { method: "DELETE" }
       );
       if (!res.ok) {
@@ -42,97 +75,146 @@ export default function ProductManagementPage() {
         setError(data.error || "Delete failed.");
         return;
       }
+      setNotice(`"${product.name}" was deleted.`);
       load();
     } catch {
-      setError("Delete failed — check your connection.");
+      setError("Delete failed. Check your connection.");
     } finally {
       setDeleting("");
     }
   };
 
-  if (!products) return <p className="p-4 text-gray-500">Loading…</p>;
+  if (!products) return <p className="p-4 text-muted">Loading...</p>;
 
   return (
     <div className="mx-auto max-w-7xl">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-2xl font-bold">Product Management</h2>
+        <h2 className="font-display text-2xl font-bold text-ink">Products</h2>
         {dbConnected && (
-          <Link
-            href="/admin/products/new"
-            className="rounded-lg bg-brand-orange px-4 py-2 font-semibold text-white hover:bg-brand-orange-dark"
-          >
-            + Add Product
+          <Link href="/admin/products/new" className={btnPrimary}>
+            Add Product
           </Link>
         )}
       </div>
-      <p className="mb-6 text-sm text-gray-600">
+      <p className="mb-6 text-sm text-muted">
         {dbConnected
-          ? `${products.length} product${products.length === 1 ? "" : "s"} in the database. Add, edit or delete — no code, no redeploy.`
-          : "DB not connected — showing launch catalogue. Connect the database to add, edit or delete products here."}
+          ? `${products.length} product${products.length === 1 ? "" : "s"} in the database. Add, edit or delete. No code, no redeploy.`
+          : notConfigured
+            ? "Database not connected. Set MONGODB_URI to manage products here. The shop keeps serving the launch catalogue meanwhile."
+            : "Products could not be loaded."}
       </p>
-      {error && (
-        <p className="mb-4 rounded bg-red-50 p-3 text-sm font-medium text-red-700">{error}</p>
+      {notConfigured && (
+        <div className={`${cardCls} mb-4 text-center`}>
+          <p className="mb-2 font-display text-lg font-semibold text-ink">Database not connected</p>
+          <p className="text-sm text-muted">
+            Set MONGODB_URI in Vercel settings (or .env.local for local dev),
+            then redeploy. Until then the shop serves the launch catalogue and
+            products cannot be managed here.
+          </p>
+        </div>
       )}
-      <div className="overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="min-w-full text-left text-gray-500">
-          <thead className="bg-gray-100 text-xs uppercase whitespace-nowrap text-gray-700">
-            <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Model</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Stock</th>
-              <th className="px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr
-                key={product._id || product.id || product.slug}
-                className="border-b border-gray-200 align-top hover:bg-gray-50"
-              >
-                <td className="p-4 font-medium text-gray-900">
-                  {product.name}
-                  {product.active === false && (
-                    <span className="ml-2 rounded bg-gray-200 px-2 py-0.5 text-xs text-gray-600">hidden</span>
-                  )}
-                </td>
-                <td className="p-4">{product.model}</td>
-                <td className="p-4">{getCategory(product.category)?.name || product.category}</td>
-                <td className="p-4">
-                  {product.pricePKR != null ? formatPrice(product.pricePKR) : "WhatsApp for price"}
-                </td>
-                <td className="p-4">
-                  {product.stock != null ? product.stock : "not tracked"}
-                </td>
-                <td className="p-4">
-                  {dbConnected ? (
-                    <>
-                      <Link
-                        href={`/admin/products/${product._id || product.slug}/edit`}
-                        className="mr-2 rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(product)}
-                        disabled={deleting === (product._id || product.slug)}
-                        className="cursor-pointer rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700 disabled:opacity-60"
-                      >
-                        {deleting === (product._id || product.slug) ? "Deleting…" : "Delete"}
-                      </button>
-                    </>
-                  ) : (
-                    <span className="rounded bg-gray-200 px-2 py-1 whitespace-nowrap text-gray-500" title="Connect the database to manage products">
-                      Read-only
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Notice kind="error">{error}</Notice>
+      {error && (
+        <button type="button" onClick={load} className={`${btnGhost} mb-4`}>
+          Retry
+        </button>
+      )}
+      <Notice kind="success">{notice}</Notice>
+
+      {!notConfigured && !error && (
+        <>
+          <div className="mb-4 grid gap-3 sm:grid-cols-3">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className={inputCls}
+              placeholder="Search by name, model or brand"
+              aria-label="Search products"
+            />
+            <select value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} className={inputCls} aria-label="Filter by brand">
+              <option value="">All brands</option>
+              {brands.map((b) => (
+                <option key={b.id || b.slug} value={b.id || b.slug}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={inputCls} aria-label="Filter by category">
+              <option value="">All categories</option>
+              {CATEGORIES.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+            <table className="min-w-full text-left text-sm text-muted">
+              <thead className="whitespace-nowrap text-ink">
+                <tr className="border-b border-line">
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Model</th>
+                  <th className="px-4 py-3">Category</th>
+                  <th className="px-4 py-3">Price</th>
+                  <th className="px-4 py-3">Stock</th>
+                  <th className="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((product) => (
+                  <tr key={product.id || product.slug} className="border-b border-line align-top last:border-0">
+                    <td className="p-4 font-medium text-ink">
+                      {product.name}
+                      {product.isNew && <span className="ml-2 rounded bg-battery/15 px-2 py-0.5 text-xs font-semibold text-battery">New</span>}
+                      {product.isFeatured && <span className="ml-2 rounded bg-success/15 px-2 py-0.5 text-xs font-semibold text-success">Featured</span>}
+                      {product.active === false && (
+                        <span className="ml-2 rounded bg-raised px-2 py-0.5 text-xs text-muted">Hidden</span>
+                      )}
+                    </td>
+                    <td className="p-4">{product.model}</td>
+                    <td className="p-4">{getCategory(product.category)?.name || product.category}</td>
+                    <td className="p-4 font-semibold text-ink">
+                      {product.pricePKR != null ? formatPrice(product.pricePKR) : "No price set"}
+                    </td>
+                    <td className="p-4">
+                      {product.stock != null ? product.stock : "Not tracked"}
+                      {product.stock != null &&
+                        product.lowStockThreshold != null &&
+                        product.stock <= product.lowStockThreshold && (
+                          <span className="ml-2 font-semibold text-danger">Low</span>
+                        )}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          href={`/admin/products/${product.id || product.slug}/edit`}
+                          className="inline-flex min-h-11 items-center rounded-lg border border-line bg-raised px-3 py-2 font-semibold text-ink hover:border-battery"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteButton
+                          label="Delete"
+                          busy={deleting === (product.id || product.slug)}
+                          onDelete={() => handleDelete(product)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-4 text-center">
+                      {products.length === 0
+                        ? "No products yet. Add your first product."
+                        : "No products match the search or filters."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }

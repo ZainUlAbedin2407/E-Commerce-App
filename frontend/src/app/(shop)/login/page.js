@@ -29,7 +29,7 @@ function LoginForm() {
         setError(
           data.error ||
             (data.code === "db_not_configured"
-              ? "Accounts are not connected yet — the database is not configured."
+              ? "Accounts are not connected yet, the database is not configured."
               : "Login failed. Try again.")
         );
         return;
@@ -51,60 +51,60 @@ function LoginForm() {
       <div className="flex w-full flex-col items-center justify-center p-8 md:w-1/2 md:p-12">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-sm"
+          className="w-full max-w-md rounded-2xl border border-line bg-surface p-8"
         >
           <div className="mb-6 flex justify-center">
             <Image
-              src="/brand-logo-dark.png"
+              src="/logo-ai-dark.png"
               alt="AI Communication"
-              width={72}
-              height={72}
-              className="h-16 w-16 rounded-lg object-cover"
+              width={503}
+              height={337}
+              className="h-16 w-auto rounded-lg"
             />
           </div>
-          <h2 className="mb-6 text-center font-display text-2xl font-bold">Login</h2>
-          <p className="mb-6 text-center text-gray-600">
+          <h2 className="mb-6 text-center font-display text-2xl font-bold text-ink">Login</h2>
+          <p className="mb-6 text-center text-muted">
             Enter your email and password to login.
           </p>
           {error && (
-            <p className="mb-4 rounded bg-red-50 p-3 text-sm font-medium text-red-700">
+            <p className="mb-4 rounded-xl border border-danger bg-raised p-3 text-sm font-medium text-danger">
               {error}
             </p>
           )}
           <div className="mb-4">
-            <label htmlFor="email" className="mb-2 block text-sm font-semibold">Email</label>
+            <label htmlFor="email" className="mb-2 block text-sm font-semibold text-ink">Email</label>
             <input
               id="email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
+              className="min-h-12 w-full rounded-xl border border-line bg-raised p-3 text-base text-ink placeholder:text-muted"
               placeholder="Enter your email address"
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="mb-2 block text-sm font-semibold">Password</label>
+            <label htmlFor="password" className="mb-2 block text-sm font-semibold text-ink">Password</label>
             <input
               id="password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border border-gray-200 p-2"
+              className="min-h-12 w-full rounded-xl border border-line bg-raised p-3 text-base text-ink placeholder:text-muted"
               placeholder="Enter your password"
             />
           </div>
           <button
             type="submit"
             disabled={busy}
-            className="w-full cursor-pointer rounded-lg bg-brand-black p-2 font-semibold text-white transition hover:bg-brand-charcoal disabled:opacity-60"
+            className="press min-h-12 w-full cursor-pointer rounded-full bg-battery p-2 font-semibold text-canvas transition hover:bg-battery-deep disabled:opacity-60"
           >
             {busy ? "Signing in…" : "Sign In"}
           </button>
-          <p className="mt-6 text-center text-sm">
+          <p className="mt-6 text-center text-sm text-muted">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-semibold text-brand-orange">
+            <Link href="/register" className="font-semibold text-battery">
               Register
             </Link>
           </p>
@@ -113,7 +113,7 @@ function LoginForm() {
       <div className="hidden w-1/2 md:block">
         <Image
           src="/brand-banner.jpg"
-          alt="AI Communication — Smart Gadgets & Gear, Saddar, Karachi"
+          alt="AI Communication, Smart Gadgets and Gear, Saddar, Karachi"
           width={1344}
           height={756}
           className="h-[750px] w-full object-cover"
@@ -125,7 +125,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<p className="p-10 text-center text-gray-500">Loading…</p>}>
+    <Suspense fallback={<p className="p-10 text-center text-muted">Loading…</p>}>
       <LoginForm />
     </Suspense>
   );

@@ -1,32 +1,34 @@
-import Link from "next/link";
-import { whatsappOrderLink } from "@/lib/site";
 import { formatPrice } from "@/lib/products";
 
-// Price rule: pricePKR is null until Zain supplies his price list.
-// Show "WhatsApp for price" — never invent a price.
+// Price rule: every product on the site must carry a real price. A
+// null price means the product is not ready to sell yet, so it shows
+// plain text and no order link. Never invent a price, and never link
+// out to WhatsApp for a price. When a compare-at price is set and is
+// greater than the price, show it struck through.
+// Price is always battery orange on the dark canvas.
 export default function PriceTag({ product, size = "md" }) {
   const price = formatPrice(product.pricePKR);
   if (price) {
     return (
-      <p
-        className={`font-display font-bold text-brand-black ${
-          size === "lg" ? "text-2xl" : "text-base"
-        }`}
-      >
-        {price}
-      </p>
+      <div className="flex flex-wrap items-baseline gap-2">
+        <p
+          className={`font-display font-bold text-battery ${
+            size === "lg" ? "text-2xl" : "text-base"
+          }`}
+        >
+          {price}
+        </p>
+        {product.compareAtPricePKR > product.pricePKR && (
+          <span className="text-sm text-muted line-through">
+            {formatPrice(product.compareAtPricePKR)}
+          </span>
+        )}
+      </div>
     );
   }
   return (
-    <Link
-      href={whatsappOrderLink(product.name)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex items-center gap-1 font-semibold text-brand-orange hover:text-brand-orange-dark ${
-        size === "lg" ? "text-lg" : "text-sm"
-      }`}
-    >
-      WhatsApp for price
-    </Link>
+    <p className={`font-semibold text-muted ${size === "lg" ? "text-lg" : "text-sm"}`}>
+      Price coming soon
+    </p>
   );
 }

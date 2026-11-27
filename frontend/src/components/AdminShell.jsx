@@ -3,13 +3,35 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FaBars, FaBoxOpen, FaClipboardList, FaStore, FaUser } from "react-icons/fa";
+import {
+  FaBars,
+  FaBoxOpen,
+  FaClipboardList,
+  FaCog,
+  FaFileInvoice,
+  FaFilter,
+  FaStar,
+  FaStore,
+  FaTachometerAlt,
+  FaTags,
+  FaThLarge,
+  FaTrademark,
+  FaUser,
+} from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 
 const NAV = [
-  { href: "/admin/users", label: "Users", icon: FaUser },
+  { href: "/admin", label: "Dashboard", icon: FaTachometerAlt },
+  { href: "/admin/storefront", label: "Storefront", icon: FaThLarge },
   { href: "/admin/products", label: "Products", icon: FaBoxOpen },
+  { href: "/admin/collections", label: "Collections", icon: FaTags },
+  { href: "/admin/brands", label: "Brands", icon: FaTrademark },
+  { href: "/admin/filters", label: "Filters", icon: FaFilter },
   { href: "/admin/orders", label: "Orders", icon: FaClipboardList },
+  { href: "/admin/draft-orders", label: "Draft orders", icon: FaFileInvoice },
+  { href: "/admin/reviews", label: "Reviews", icon: FaStar },
+  { href: "/admin/settings", label: "Settings", icon: FaCog },
+  { href: "/admin/users", label: "Users", icon: FaUser },
   { href: "/", label: "Shop", icon: FaStore },
 ];
 
@@ -26,7 +48,7 @@ export default function AdminShell({ children, dbConfigured }) {
 
   return (
     <div className="relative flex min-h-screen flex-col md:flex-row">
-      <div className="z-20 flex bg-brand-charcoal p-4 text-white md:hidden">
+      <div className="z-20 flex bg-surface p-4 text-ink md:hidden">
         <button onClick={() => setIsSideBarOpen(true)} aria-label="Open admin menu">
           <FaBars size={24} />
         </button>
@@ -41,14 +63,14 @@ export default function AdminShell({ children, dbConfigured }) {
       )}
 
       <div
-        className={`absolute z-20 min-h-screen w-64 transform bg-brand-charcoal text-white transition-transform duration-300 md:relative md:translate-x-0 ${
+        className={`absolute z-20 min-h-screen w-64 transform bg-surface text-ink transition-transform duration-300 md:relative md:translate-x-0 ${
           isSideBarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="p-6">
           <div className="mb-6 flex justify-between">
             <Link href="/admin" className="font-display text-xl font-bold uppercase">
-              AI <span className="text-brand-orange">Communication</span>
+              AI <span className="text-battery">Communication</span>
             </Link>
             <button
               onClick={() => setIsSideBarOpen(false)}
@@ -69,8 +91,8 @@ export default function AdminShell({ children, dbConfigured }) {
                   onClick={() => setIsSideBarOpen(false)}
                   className={`flex items-center space-x-2 rounded px-4 py-3 ${
                     active
-                      ? "bg-brand-orange text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      ? "bg-battery text-canvas"
+                      : "text-muted hover:bg-raised hover:text-ink"
                   }`}
                 >
                   <Icon />
@@ -82,20 +104,20 @@ export default function AdminShell({ children, dbConfigured }) {
           {dbConfigured ? (
             <button
               onClick={handleLogout}
-              className="mt-6 w-full cursor-pointer rounded bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20"
+              className="mt-6 w-full cursor-pointer rounded bg-ink/10 px-4 py-2 text-sm font-semibold text-ink hover:bg-ink/20"
             >
               Logout
             </button>
           ) : (
-            <p className="mt-6 rounded bg-white/10 p-3 text-xs text-gray-300">
-              Database not connected — showing the launch catalogue. Sign-in and
+            <p className="mt-6 rounded bg-ink/10 p-3 text-xs text-muted">
+              Database not connected. Showing the launch catalogue. Sign-in and
               saving are disabled until the database is configured.
             </p>
           )}
         </div>
       </div>
 
-      <div className="min-w-0 flex-grow overflow-auto bg-brand-paper p-6">{children}</div>
+      <div className="min-w-0 flex-grow overflow-auto bg-canvas p-6">{children}</div>
     </div>
   );
 }

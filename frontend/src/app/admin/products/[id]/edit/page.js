@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AdminProductForm from "@/components/AdminProductForm";
-import { getProduct } from "@/lib/products";
+import { btnPrimary, Notice } from "@/components/AdminUI";
 
 export default function EditProductPage() {
   const { id } = useParams();
@@ -12,16 +12,29 @@ export default function EditProductPage() {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const load = () => {
+    setError("");
+    setLoaded(false);
     fetch(`/api/admin/products/${encodeURIComponent(id)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.product) setProduct(data.product);
-        else setProduct(getProduct(id) || null);
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || !data?.product) {
+          // Never fall back to the seed product. Saving it would overwrite
+          // the real database product with seed values. Show the error.
+          setError(data.error || "Could not load this product.");
+          setProduct(null);
+        } else {
+          setProduct(data.product);
+        }
       })
-      .catch(() => setProduct(getProduct(id) || null))
+      .catch(() => {
+        setError("Could not load this product. Check your connection.");
+        setProduct(null);
+      })
       .finally(() => setLoaded(true));
-  }, [id]);
+  };
+
+  useEffect(load, [id]);
 
   const handleSave = async (payload) => {
     const res = await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
@@ -33,31 +46,40 @@ export default function EditProductPage() {
     if (!res.ok) throw new Error(data.error || "Could not save the product.");
   };
 
-  if (!loaded) return <p className="p-4 text-gray-500">Loading…</p>;
+  if (!loaded) return <p className="p-4 text-muted">Loading...</p>;
 
   if (!product) {
     return (
       <div className="mx-auto max-w-3xl">
-        <h2 className="mb-2 font-display text-2xl font-bold">Edit Product</h2>
-        <p className="text-gray-600">
-          Product &ldquo;{id}&rdquo; was not found.{" "}
-          <Link href="/admin/products" className="font-semibold text-brand-orange">
-            Back to Products
-          </Link>
-        </p>
+        <h2 className="mb-2 font-display text-2xl font-bold text-ink">Edit Product</h2>
+        <Notice kind="error">{error}</Notice>
+        {error ? (
+          <>
+            <button onClick={load} className={`${btnPrimary} mr-3`}>
+              Retry
+            </button>
+            <Link href="/admin/products" className="font-semibold text-battery">
+              Back to Products
+            </Link>
+          </>
+        ) : (
+          <p className="text-muted">
+            Product &ldquo;{id}&rdquo; was not found.{" "}
+            <Link href="/admin/products" className="font-semibold text-battery">
+              Back to Products
+            </Link>
+          </p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h2 className="mb-2 font-display text-2xl font-bold">Edit Product</h2>
-      <p className="mb-6 text-sm text-gray-600">
+      <h2 className="mb-2 font-display text-2xl font-bold text-ink">Edit Product</h2>
+      <p className="mb-6 text-sm text-muted">
         {product.brand} · {product.model} · {product.category}
       </p>
-      {error && (
-        <p className="mb-4 rounded bg-red-50 p-3 text-sm font-medium text-red-700">{error}</p>
-      )}
       <AdminProductForm initial={product} onSave={handleSave} />
     </div>
   );

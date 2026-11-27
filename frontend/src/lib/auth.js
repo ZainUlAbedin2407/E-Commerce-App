@@ -7,6 +7,8 @@
 
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { connectDB, isDbConfigured } from "./mongodb";
+import { sameOriginError } from "./api-helpers";
 
 export const AUTH_COOKIE = "ai-auth";
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days, in seconds
@@ -35,7 +37,11 @@ export function signToken(user) {
 
 export function verifyToken(token) {
   try {
-    return jwt.verify(token, getSecret());
+    // Audit L2: pin the algorithm. HS256 is the only algorithm we ever
+    // sign with; without the pin, a token with alg "none" (or an
+    // algorithm-confusion attack) is a theoretical risk if the secret
+    // handling ever changed.
+    return jwt.verify(token, getSecret(), { algorithms: ["HS256"] });
   } catch {
     return null;
   }
@@ -83,9 +89,38 @@ export function requireAuth(request) {
   return { user, error: null };
 }
 
-export function requireAdmin(request) {
+export async function requireAdmin(request) {
+  // Audit M3: cookie-authenticated state-changing requests must come
+  // from our own origin (GETs are read-only and need no Origin check).
+  if (request.method && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+    const originErr = sameOriginError(request);
+    if (originErr) return { user: null, error: originErr };
+  }
   const { user, error } = requireAuth(request);
   if (error) return { user: null, error };
+  // Audit M2: the token's role claim is a hint, not the authority.
+  // Re-check the live role in the database, so a demoted admin (or a
+  // token copied before a role change) loses access immediately, and a
+  // deleted account cannot use its old token. When the DB is not
+  // configured there is no admin at all in practice (login needs the
+  // DB), so the token role stands in preview.
+  if (isDbConfigured()) {
+    try {
+      await connectDB();
+      const { default: User } = await import("@/models/User");
+      const dbUser = await User.findById(user.id).select("role").lean();
+      if (!dbUser || dbUser.role !== "admin") {
+        return { user: null, error: jsonError("Admin only.", 403) };
+      }
+      return { user: { ...user, role: dbUser.role }, error: null };
+    } catch (err) {
+      // A DB failure is a 503, never a silent pass-through.
+      return {
+        user: null,
+        error: jsonError("Database is temporarily unavailable. Please try again.", 503),
+      };
+    }
+  }
   if (user.role !== "admin") {
     return { user: null, error: jsonError("Admin only.", 403) };
   }
@@ -100,6 +135,7 @@ export function publicUser(user) {
     email: user.email,
     phone: user.phone || "",
     role: user.role,
+    createdAt: user.createdAt || null,
   };
 }
 

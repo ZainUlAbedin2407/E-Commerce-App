@@ -1,25 +1,53 @@
-// AI Communication — local product seed (Phase 1, UI only).
-// HERO-ONLY SEED (Zain's choice, 26 Nov 2026): only these 4 hero products.
-// Zain will add the rest himself via the admin panel in Phase 2 — the other
-// 12 products he sent (URPIN earbuds, OX-PD11/12/13, DV-2106, 219MINI,
-// Portable Music, WS01/WS02, Ultra-2 BIG) are NOT seeded here. Their photos
-// and details stay only in the inventory notes, not in this file or in
-// public/products/.
-// Every product below is confirmed by a photo Zain sent. NOTHING is invented:
-// - pricePKR is null for every product. The UI must show "WhatsApp for price".
-//   Never put a PKR or $ price here until Zain supplies his price list.
-// - specs contain ONLY facts visible on the product / box in the photo.
-// Phase 2 will move this exact catalogue into MongoDB; the shape is kept
-// deliberately close to the planned Mongoose schema (slug, brand, model,
-// category, specs, images, isFeatured, isNew).
+// AI Communication, local product seed (V3, 27 Nov 2026).
+//
+// SIX products: the 4 heroes plus Buds Pro 9 and the GREAT NICE speaker,
+// which came from Zain's WhatsApp review screenshots (V3 plan sec 6).
+// This file is the local fallback catalogue AND the seed source -
+// scripts/seed.mjs inserts these exact records into MongoDB, so the two
+// must stay in sync.
+//
+// PRICES (all editable in admin; Zain replaces them with his own):
+// - DV-1089 Rs 1,250: Zain's REAL sale price from his WhatsApp chat
+//   ("1250 ka parega", customer bought one). It replaces the old
+//   researched band of Rs 3,000-3,500, which was wrong for this product.
+// - i20 Rs 2,500 (his confirmed price), OX-PD10 Rs 3,200, SY-777 Rs 1,500:
+//   researched bands from 26 Nov 2026, unchanged.
+// - Buds Pro 9 Rs 2,300: band midpoint. PK online stores list it at
+//   Rs 1,743 (Lumelanes), 1,850 (pkmall), 1,998 (AbrishMart), 2,346
+//   (Everyco), 2,399 (AS Gadgets), 2,533 (ASM VEO), 2,850 (airpods.pk)
+//  , band 1,743-2,850, midpoint ~2,300. Checked 27 Nov 2026.
+// - GREAT NICE GTS-2190 Rs 1,750: no exact listing found for this model.
+//   Comparable 4-inch Greatnice party speakers on shoppersstop.pk:
+//   GTS-2118 4 inch Rs 1,508, GTS-2349 Rs 1,615, GTS-2571 Rs 1,200,
+//   GTS-2009 Rs 2,306, plus a GTS-2309 sold retail at Rs 1,500 -
+//   band 1,200-2,306, midpoint ~1,750. Checked 27 Nov 2026.
+//
+// WEIGHTS and WARRANTY are sensible examples only (Zain, 27 Nov 2026:
+// "not tight", he replaces them when he adds his real products).
+// Warranty 0 = checking warranty only, for all six.
+// Specs contain ONLY facts visible on the product / box in the photo.
+// No URPIN product is seeded here; no URPIN product is in the 6.
 
 export const CATEGORIES = [
-  { slug: "earbuds", name: "Earbuds", blurb: "Wireless earbuds — original, sealed pack." },
+  { slug: "earbuds", name: "Earbuds", blurb: "Wireless earbuds, original, sealed pack." },
   { slug: "smartwatches", name: "Smartwatches", blurb: "Smartwatches with straps sets." },
   { slug: "power-banks", name: "Power Banks", blurb: "Fast-charging power banks with LCD display." },
-  { slug: "speakers", name: "Speakers", blurb: "Wireless speakers — loud, portable, RGB." },
-  { slug: "chargers", name: "Fast Chargers", blurb: "Chargers & adapters — stock arriving soon." },
-  { slug: "handsfree", name: "Handsfree", blurb: "Handsfree — stock arriving soon." },
+  { slug: "speakers", name: "Speakers", blurb: "Wireless speakers, loud, portable, RGB." },
+  { slug: "chargers", name: "Fast Chargers", blurb: "Chargers & adapters, stock arriving soon." },
+  { slug: "handsfree", name: "Handsfree", blurb: "Handsfree, stock arriving soon." },
+];
+
+// Brands seeded alongside the products (scripts/seed.mjs). `brandId` is
+// the Mongo ObjectId once seeded; in this local file it is null and the
+// brand is identified by `brandSlug`. The legacy `brand` string is kept
+// on every product and always matches the Brand name.
+export const BRANDS = [
+  { name: "OMXMO", slug: "omxmo", logo: "", description: "" },
+  { name: "DV", slug: "dv", logo: "", description: "" },
+  { name: "SY", slug: "sy", logo: "", description: "" },
+  { name: "i20", slug: "i20", logo: "", description: "" },
+  { name: "Buds Pro 9", slug: "buds-pro-9", logo: "", description: "" },
+  { name: "GREAT NICE", slug: "great-nice", logo: "", description: "" },
 ];
 
 export function getCategory(slug) {
@@ -34,9 +62,15 @@ export const PRODUCTS = [
     slug: "omxmo-ox-pd10",
     name: "OMXMO OX-PD10 Power Bank 10000mAh",
     brand: "OMXMO",
+    brandSlug: "omxmo",
+    brandId: null,
     model: "OX-PD10",
     category: "power-banks",
-    pricePKR: null,
+    pricePKR: 3200,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.3,
     shortDesc: "10000mAh power bank with LCD display and built-in cables.",
     specs: {
       Capacity: "10000mAh",
@@ -46,6 +80,7 @@ export const PRODUCTS = [
       Cables: "Built-in Lightning + Type-C",
       Colours: "Black / White",
     },
+    features: [],
     images: [
       "/products/omxmo-ox-pd10-front.png",
       "/products/omxmo-ox-pd10-box.jpg",
@@ -62,9 +97,15 @@ export const PRODUCTS = [
     slug: "dv-1089",
     name: "DV-1089 Wireless Speaker",
     brand: "DV",
+    brandSlug: "dv",
+    brandId: null,
     model: "DV-1089",
     category: "speakers",
-    pricePKR: null,
+    pricePKR: 1250,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.8,
     shortDesc: "Wireless speaker with phone-holder slot and solar panel back.",
     specs: {
       "Phone holder": "Top slot for your phone",
@@ -73,6 +114,7 @@ export const PRODUCTS = [
       Colours: "Black / Blue-grey",
       Strap: "Carry strap",
     },
+    features: [],
     images: [
       "/products/dv-1089-box.jpg",
       "/products/dv-1089-front.jpg",
@@ -88,11 +130,18 @@ export const PRODUCTS = [
     slug: "sy-777",
     name: "SY-777 Wireless Speaker",
     brand: "SY",
+    brandSlug: "sy",
+    brandId: null,
     model: "SY-777",
     category: "speakers",
-    pricePKR: null,
+    pricePKR: 1500,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.4,
     shortDesc: "Small square wireless speaker with RGB LED ring.",
     specs: { Lights: "RGB LED ring", Colours: "Blue / Lime-green / Orange", Strap: "Carry strap" },
+    features: [],
     images: ["/products/sy-777-blue.jpg", "/products/sy-777-colours.jpg"],
     isFeatured: true,
     isNew: true,
@@ -101,15 +150,81 @@ export const PRODUCTS = [
   {
     id: "i20-ultra-max-suit",
     slug: "i20-ultra-max-suit",
-    name: "i20 ULTRA MAX SUIT Smartwatch — 10 in 1 Set",
+    name: "i20 ULTRA MAX SUIT Smartwatch, 10 in 1 Set",
     brand: "i20",
+    brandSlug: "i20",
+    brandId: null,
     model: "i20 ULTRA MAX SUIT BIG 2.3",
     category: "smartwatches",
-    pricePKR: null,
-    shortDesc: "Watch + earphones together in one box — 10 in 1 set.",
+    pricePKR: 2500,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.5,
+    shortDesc: "Watch + earphones together in one box, 10 in 1 set.",
     specs: { Display: "BIG 2.3 Infinite Display", Set: "10 in 1 (watch + earphones)" },
+    features: [],
     images: ["/products/i20-ultra-max-suit.png"],
     isFeatured: true,
+    isNew: true,
+  },
+  // ---- New: Earbuds (from the WhatsApp review screenshot) ----
+  {
+    id: "buds-pro-9",
+    slug: "buds-pro-9",
+    name: "Buds Pro 9 Wireless Earbuds",
+    // The brand is "Buds Pro 9": that is what the box says. No brand
+    // is invented for this product.
+    brand: "Buds Pro 9",
+    brandSlug: "buds-pro-9",
+    brandId: null,
+    model: "Buds Pro 9",
+    category: "earbuds",
+    pricePKR: 2300,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "TWS earbuds with ANC/ENC Double Dark Noise Reduction and touch control.",
+    specs: {
+      "ANC/ENC": "Double Dark Noise Reduction",
+      Control: "Touch Control",
+      Colours: "Beige / White and Black",
+    },
+    features: [],
+    // Cropped from the review screenshot by the foundation agent.
+    images: ["/products/buds-pro-9-beige.jpg", "/products/buds-pro-9-black.jpg"],
+    isFeatured: true,
+    isNew: true,
+  },
+  // ---- New: Party speaker (from the WhatsApp review screenshot) ----
+  {
+    id: "great-nice-gts-2190",
+    slug: "great-nice-gts-2190",
+    name: "GREAT NICE Wireless Party Speaker GTS-2190",
+    brand: "GREAT NICE",
+    brandSlug: "great-nice",
+    brandId: null,
+    model: "GTS-2190",
+    category: "speakers",
+    pricePKR: 1750,
+    compareAtPricePKR: null,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 2.5,
+    shortDesc: "4 inch wireless party speaker with LED lights and big sound.",
+    specs: {
+      Size: "4 inch",
+      Lights: "LED lights",
+      Sound: "Big sound",
+      Speakers: "Dual speakers",
+      LED: "Blue / Green LED",
+      Model: "GTS-2190",
+    },
+    features: [],
+    // Cropped from the review screenshot by the foundation agent.
+    images: ["/products/great-nice-speaker.jpg", "/products/great-nice-box.jpg"],
+    isFeatured: false,
     isNew: true,
   },
 ];
@@ -132,7 +247,7 @@ export function getNewProducts() {
 }
 
 export function getBrands() {
-  return [...new Set(PRODUCTS.map((p) => p.brand))];
+  return BRANDS.map((b) => ({ ...b }));
 }
 
 // Price display rule: no price is ever invented. pricePKR is null until Zain

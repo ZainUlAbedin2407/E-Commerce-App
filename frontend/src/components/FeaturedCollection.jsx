@@ -3,44 +3,52 @@ import Link from "next/link";
 import { getProduct } from "@/lib/products";
 import PriceTag from "./PriceTag";
 
+// Featured product story, problem first, then the spec that serves it.
 // `product` comes from the catalogue (DB or seed) via the home page.
-export default function FeaturedCollection({ product }) {
-  const featured = product || getProduct("dv-1089");
+// The copy is the product's own shortDesc plus its real specs, so it
+// can never desync from the product it shows.
+export default function FeaturedCollection({ product, title }) {
+  const featured = product || getProduct("omxmo-ox-pd10");
   if (!featured) return null;
-  product = featured;
-
+  const specs = Object.entries(featured.specs || {}).slice(0, 4);
   return (
-    <section className="px-4 py-16 lg:px-0">
-      <div className="container mx-auto flex flex-col-reverse items-center rounded-3xl bg-brand-charcoal lg:flex-row">
-        <div className="p-8 text-center text-white lg:w-1/2 lg:text-left">
-          <h2 className="mb-2 text-lg font-semibold text-brand-orange">
-            Featured Product
+    <section className="px-5 py-12 md:px-12">
+      <div className="grid grid-cols-1 items-center gap-8 overflow-hidden rounded-2xl bg-surface p-6 md:p-10 lg:grid-cols-2">
+        <div>
+          <h2 className="font-display text-3xl font-bold text-ink md:text-4xl">
+            {title || "Power that lasts the day"}
           </h2>
-          <h2 className="mb-6 font-display text-4xl font-bold lg:text-5xl">
-            {product.name}
-          </h2>
-          <p className="mb-6 text-lg text-brand-cream">
-            {product.shortDesc} Phone-holder slot on top, solar panel on the
-            back, FM radio, USB and TF card — made for long trips and load-shedding
-            evenings alike.
+          <p className="mt-4 max-w-[66ch] text-lg text-muted">
+            Load shedding in the middle of a call, a phone at 4 percent on the
+            way home. {featured.shortDesc}
           </p>
-          <div className="mb-6 flex justify-center lg:justify-start">
-            <PriceTag product={product} size="lg" />
+          {specs.length > 0 && (
+            <dl className="mt-6 divide-y divide-line border-y border-line">
+              {specs.map(([key, value]) => (
+                <div key={key} className="flex justify-between gap-4 py-2 text-sm">
+                  <dt className="text-muted">{key}</dt>
+                  <dd className="text-right font-medium text-ink">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          <div className="mt-6">
+            <PriceTag product={featured} size="lg" />
           </div>
           <Link
-            href={`/product/${product.slug}`}
-            className="inline-block rounded-lg bg-brand-orange px-6 py-3 text-lg font-semibold text-white hover:bg-brand-orange-dark"
+            href={`/product/${featured.slug}`}
+            className="press mt-4 inline-flex min-h-12 items-center rounded-full bg-battery px-8 py-3 text-lg font-semibold text-canvas hover:bg-battery-deep"
           >
-            View Product
+            View {featured.model || featured.name}
           </Link>
         </div>
-        <div className="lg:w-1/2">
+        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-raised">
           <Image
-            src={product.images[1] || product.images[0]}
-            alt={product.name}
-            width={1024}
-            height={1024}
-            className="h-full w-full object-cover lg:rounded-br-3xl lg:rounded-tr-3xl"
+            src={featured.images[1] || featured.images[0]}
+            alt={featured.name}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
           />
         </div>
       </div>

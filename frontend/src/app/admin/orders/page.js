@@ -2,123 +2,188 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { loadOrders } from "@/lib/cart-context";
+import { formatPrice } from "@/lib/products";
+import { btnGhost, cardCls, fmtDate, inputCls, Notice } from "@/components/AdminUI";
 
-const STATUSES = ["Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"];
+const STATUSES = ["", "Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"];
 
 export default function OrderManagementPage() {
   const [orders, setOrders] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [dbConnected, setDbConnected] = useState(false);
+  const [notConfigured, setNotConfigured] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
-  const load = () => {
-    // Server orders first (every customer's order, any device). Falls back
-    // to this device's local orders when the database is not connected.
-    fetch("/api/admin/orders")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.orders) {
-          setOrders(data.orders.map((o) => ({ ...o, id: o.orderNo || o._id })));
-          setDbConnected(true);
+  const load = (p = 1) => {
+    setError("");
+    setNotConfigured(false);
+    const qs = new URLSearchParams({ page: String(p), limit: "50" });
+    if (search.trim()) qs.set("search", search.trim());
+    if (statusFilter) qs.set("status", statusFilter);
+    fetch(`/api/admin/orders?${qs}`)
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          if (data.code === "db_not_configured") setNotConfigured(true);
+          else setError(data.error || "Could not load orders.");
+          setOrders([]);
+          setDbConnected(false);
         } else {
-          setOrders(loadOrders());
+          setOrders(data.orders || []);
+          setPages(data.pages || 1);
+          setTotal(data.total || 0);
+          setPage(data.page || p);
+          setDbConnected(true);
         }
       })
-      .catch(() => setOrders(loadOrders()))
+      .catch(() => {
+        setError("Could not load orders. Check your connection.");
+        setOrders([]);
+        setDbConnected(false);
+      })
       .finally(() => setLoaded(true));
   };
 
-  useEffect(load, []);
-
-  const handleStatus = async (order, status) => {
-    if (!dbConnected) return;
-    setError("");
-    const res = await fetch(`/api/admin/orders/${encodeURIComponent(order._id || order.id)}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    }).catch(() => null);
-    if (!res || !res.ok) {
-      const data = res ? await res.json().catch(() => ({})) : {};
-      setError(data.error || "Could not update the order status.");
-      return;
-    }
-    setOrders((list) =>
-      list.map((o) => (o.id === order.id ? { ...o, status } : o))
-    );
-  };
+  // Search and status filter on the server; the search input is debounced.
+  useEffect(() => {
+    const t = setTimeout(() => load(1), 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, statusFilter]);
 
   return (
     <div className="mx-auto max-w-7xl">
-      <h2 className="mb-2 font-display text-2xl font-bold">Order Management</h2>
-      <p className="mb-6 text-sm text-gray-600">
-        {dbConnected
-          ? "All customer orders from the database. Change a status and it updates for the customer too."
-          : "Database not connected — showing orders placed on this device only. Connect the database to see every customer's order here."}
-      </p>
-      {error && (
-        <p className="mb-4 rounded bg-red-50 p-3 text-sm font-medium text-red-700">{error}</p>
-      )}
-      <div className="overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="min-w-full text-left text-gray-500">
-          <thead className="bg-gray-100 text-xs uppercase whitespace-nowrap text-gray-700">
-            <tr>
-              <th className="px-4 py-3">Order ID</th>
-              <th className="px-4 py-3">Customer</th>
-              <th className="px-4 py-3">City</th>
-              <th className="px-4 py-3">Items</th>
-              <th className="px-4 py-3">Payment</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loaded ? (
-              <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-500">Loading…</td>
-              </tr>
-            ) : orders.length > 0 ? (
-              orders.map((order) => (
-                <tr key={order.id} className="border-b border-gray-200 align-top hover:bg-gray-50">
-                  <td className="p-4 font-medium text-gray-900">
-                    <Link href={`/order/${order.id}`} className="text-brand-orange hover:underline">
-                      #{order.id}
-                    </Link>
-                  </td>
-                  <td className="p-4">{order.customer.name}</td>
-                  <td className="p-4">{order.customer.city}</td>
-                  <td className="p-4">{order.items.reduce((s, i) => s + i.qty, 0)}</td>
-                  <td className="p-4">{order.paymentMethod}</td>
-                  <td className="p-4">
-                    {dbConnected ? (
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatus(order, e.target.value)}
-                        className="cursor-pointer rounded border border-gray-200 bg-white px-2 py-1 text-sm font-medium text-gray-700"
-                        aria-label={`Status for order ${order.id}`}
-                      >
-                        {STATUSES.map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
-                        {order.status}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-500">
-                  No orders found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-2xl font-bold text-ink">Orders</h2>
+        <Link href="/admin/draft-orders" className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-battery px-5 py-2 font-semibold text-canvas hover:bg-battery-deep">
+          New draft order
+        </Link>
       </div>
+      <p className="mb-6 text-sm text-muted">
+        {dbConnected
+          ? `${total} order${total === 1 ? "" : "s"} in total. Open an order to change its status, add a note, verify a payment or handle a return.`
+          : notConfigured
+            ? "Database not connected. Set MONGODB_URI to see every customer order here."
+            : "Orders could not be loaded."}
+      </p>
+      {notConfigured && (
+        <div className={`${cardCls} mb-4 text-center`}>
+          <p className="mb-2 font-display text-lg font-semibold text-ink">Database not connected</p>
+          <p className="text-sm text-muted">
+            Set MONGODB_URI in Vercel settings (or .env.local for local dev),
+            then redeploy. Until then, orders are only visible on the device
+            that placed them.
+          </p>
+        </div>
+      )}
+      <Notice kind="error">{error}</Notice>
+      {error && (
+        <button type="button" onClick={() => load(page)} className={`${btnGhost} mb-4`}>
+          Retry
+        </button>
+      )}
+      {!notConfigured && !error && (
+        <>
+          <div className="mb-4 grid gap-3 sm:grid-cols-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className={inputCls}
+              placeholder="Search by order number, phone or name"
+              aria-label="Search orders"
+            />
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={inputCls} aria-label="Filter by status">
+              <option value="">All statuses</option>
+              {STATUSES.filter(Boolean).map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <p className="mb-3 text-xs text-muted">
+            Search and status filter all orders on the server.
+          </p>
+          <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+            <table className="min-w-full text-left text-sm text-muted">
+              <thead className="whitespace-nowrap text-ink">
+                <tr className="border-b border-line">
+                  <th className="px-4 py-3">Order</th>
+                  <th className="px-4 py-3">Customer</th>
+                  <th className="px-4 py-3">Total</th>
+                  <th className="px-4 py-3">Payment</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!loaded ? (
+                  <tr>
+                    <td colSpan={6} className="p-4 text-center">Loading...</td>
+                  </tr>
+                ) : orders.length > 0 ? (
+                  orders.map((order) => (
+                    <tr key={order.id} className="border-b border-line align-top last:border-0">
+                      <td className="p-4 font-semibold text-ink">
+                        <Link href={`/admin/orders/${order.orderNo || order.id}`} className="text-battery hover:underline">
+                          {order.orderNo || order.id}
+                        </Link>
+                      </td>
+                      <td className="p-4">
+                        {order.customer?.name || "No name"}
+                        <span className="block text-xs">{order.customer?.phone || ""}</span>
+                      </td>
+                      <td className="p-4 font-semibold text-ink">
+                        {order.totalPKR != null ? formatPrice(order.totalPKR) : "No total"}
+                      </td>
+                      <td className="p-4">
+                        {order.paymentMethod || "Not set"}
+                        <span className="block text-xs">{order.paymentStatus || ""}</span>
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`rounded px-2 py-0.5 text-xs font-semibold ${
+                            order.status === "Delivered"
+                              ? "bg-success/15 text-success"
+                              : order.status === "Cancelled"
+                                ? "bg-danger/15 text-danger"
+                                : "bg-battery/15 text-battery"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="p-4 whitespace-nowrap">{fmtDate(order.createdAt)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="p-4 text-center">
+                      No orders found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {pages > 1 && (
+            <div className="mt-4 flex items-center gap-3">
+              <button type="button" disabled={page <= 1} onClick={() => load(page - 1)} className={btnGhost}>
+                Previous
+              </button>
+              <span className="text-sm text-muted">
+                Page {page} of {pages}
+              </span>
+              <button type="button" disabled={page >= pages} onClick={() => load(page + 1)} className={btnGhost}>
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
