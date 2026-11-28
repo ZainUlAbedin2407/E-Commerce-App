@@ -24,8 +24,11 @@
 // Prices (V3 plan sec 5.3, all editable in admin; Zain replaces them):
 // - DV-1089 Rs 1,250: Zain's REAL sale price from his WhatsApp chat
 //   ("1250 ka parega", customer bought one). NOT the old 3,300 band.
-// - i20 Rs 2,500 (his confirmed price) · OX-PD10 Rs 3,200 · SY-777
-//   Rs 1,500 (researched bands, 26 Nov 2026).
+// - i20 Rs 2,500 (his confirmed price) · SY-777 Rs 1,500 (researched
+//   bands, 26 Nov 2026). OX-PD10 was Rs 3,200 (researched band); the
+//   catalog price is Rs 2,600 (was 3,000), corrected by
+//   scripts/apply-catalog-corrections.mjs (Batch 2, 28 Nov 2026) because
+//   the seed never overwrites a price once set.
 // - Buds Pro 9 Rs 2,300: band midpoint of PK online stores, Rs 1,743
 //   (Lumelanes) to Rs 2,850 (airpods.pk); also 1,850 pkmall, 1,998
 //   AbrishMart, 2,346 Everyco, 2,399 AS Gadgets, 2,533 ASM VEO.
