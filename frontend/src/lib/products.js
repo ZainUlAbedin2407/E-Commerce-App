@@ -1,9 +1,10 @@
 // AI Communication, local product seed (V3, 27 Nov 2026; Batch 1, 28 Nov 2026).
 //
-// ELEVEN products: the 4 heroes plus Buds Pro 9 and the GREAT NICE speaker
-// (from Zain's WhatsApp review screenshots, 27 Nov), plus 5 earbuds from
+// THIRTEEN products: the 4 heroes plus Buds Pro 9 and the GREAT NICE speaker
+// (from Zain's WhatsApp review screenshots, 27 Nov), plus 7 earbuds from
 // Zain's WhatsApp catalog screenshots (Batch 1, 28 Nov): Urpin UA-30 Pro,
-// Urpin UA-50 Pro, Urpin UA-60 Pro, Buds Pro 2, Buds Pro 5.
+// Urpin UA-50 Pro, Urpin UA-60 Pro, Buds Pro 2, Buds Pro 3, Buds Pro 4,
+// Buds Pro 5.
 // This file is the local fallback catalogue AND the seed source -
 // scripts/seed.mjs inserts these exact records into MongoDB, so the two
 // must stay in sync.
@@ -27,9 +28,11 @@
 //   price first, struck-through compare-at second:
 //   UA-30 Pro Rs 2,150 (was 2,400), UA-50 Pro Rs 2,250 (was 2,500),
 //   UA-60 Pro Rs 2,350 (was 2,600), Buds Pro 2 Rs 1,000 (was 1,300),
-//   Buds Pro 5 Rs 1,300 (was 1,600). Buds Pro 3 (Rs 1,100, was 1,400)
-//   and Buds Pro 4 (Rs 1,200, was 1,500) are NOT seeded: their RAR
-//   folder holds only Gemini-generated images, no real product photos.
+//   Buds Pro 3 Rs 1,100 (was 1,400), Buds Pro 4 Rs 1,200 (was 1,500),
+//   Buds Pro 5 Rs 1,300 (was 1,600). Buds Pro 3 / 4 images are the
+//   product renders from Zain's catalog folder (Gemini-generated files);
+//   Zain confirmed 28 Nov 2026 these ARE the actual product images, so
+//   they are used.
 //
 // WEIGHTS and WARRANTY are sensible examples only (Zain, 27 Nov 2026:
 // "not tight", he replaces them when he adds his real products).
@@ -63,6 +66,8 @@ export const BRANDS = [
   // Buds Pro 9 precedent (brand = product name, no brand invented).
   { name: "URPIN", slug: "urpin", logo: "", description: "" },
   { name: "Buds Pro 2", slug: "buds-pro-2", logo: "", description: "" },
+  { name: "Buds Pro 3", slug: "buds-pro-3", logo: "", description: "" },
+  { name: "Buds Pro 4", slug: "buds-pro-4", logo: "", description: "" },
   { name: "Buds Pro 5", slug: "buds-pro-5", logo: "", description: "" },
 ];
 
@@ -392,6 +397,77 @@ export const PRODUCTS = [
       "/products/buds-pro-2-4.jpg",
       "/products/buds-pro-2-5.jpg",
       "/products/buds-pro-2-6.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "buds-pro-3",
+    slug: "buds-pro-3",
+    name: "Buds Pro 3 Wireless Earbuds",
+    // The brand is "Buds Pro 3": that is what the box says, same as
+    // Buds Pro 9. No brand is invented for this product.
+    brand: "Buds Pro 3",
+    brandSlug: "buds-pro-3",
+    brandId: null,
+    model: "Buds Pro 3",
+    category: "earbuds",
+    pricePKR: 1100,
+    compareAtPricePKR: 1400,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "TWS wireless earbuds with crisp sound, crystal-clear calls, 5-6 hours playtime and IPX4 water resistance.",
+    specs: {
+      Audio: "Crisp sound, crystal-clear calls, seamless connectivity",
+      Playtime: "5-6 hours of continuous music playback and talk time on a single charge",
+      "Water resistance": "IPX4, handles sweat, splashes and light rain",
+      Design: "Ergonomic, secure, comfortable fit with intuitive touch controls",
+      Colours: "Available in white and black",
+    },
+    features: [],
+    images: [
+      "/products/buds-pro-3-1.jpg",
+      "/products/buds-pro-3-2.jpg",
+      "/products/buds-pro-3-3.jpg",
+      "/products/buds-pro-3-4.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "buds-pro-4",
+    slug: "buds-pro-4",
+    name: "Buds Pro 4 Wireless Earbuds",
+    // The brand is "Buds Pro 4": that is what the box says, same as
+    // Buds Pro 9. No brand is invented for this product.
+    brand: "Buds Pro 4",
+    brandSlug: "buds-pro-4",
+    brandId: null,
+    model: "Buds Pro 4",
+    category: "earbuds",
+    pricePKR: 1200,
+    compareAtPricePKR: 1500,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "Premium earbuds with mirror-finish chrome lid, 3 voice changer modes, HD stereo sound and low-latency Bluetooth.",
+    specs: {
+      Design: "Stylish mirror-finish chrome lid, smooth body design",
+      Audio: "Crystal-clear HD stereo sound, deep bass, balanced output",
+      "Voice changer": "3 built-in modes (Fun, Deep, Normal) for calls and gaming",
+      Connection: "Fast, stable Bluetooth with low-latency performance for gaming",
+      Controls: "Smart touch control with volume control",
+      Charging: "Long battery backup, portable charging case included",
+    },
+    features: [],
+    images: [
+      "/products/buds-pro-4-1.jpg",
+      "/products/buds-pro-4-2.jpg",
+      "/products/buds-pro-4-3.jpg",
+      "/products/buds-pro-4-4.jpg",
+      "/products/buds-pro-4-5.jpg",
+      "/products/buds-pro-4-6.jpg",
     ],
     isFeatured: false,
     isNew: true,

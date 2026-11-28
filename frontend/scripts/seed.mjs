@@ -284,7 +284,7 @@ for (const p of buildProductDocs(brandIdBySlug)) {
       },
       $setOnInsert: {
         pricePKR: p.pricePKR,
-        compareAtPricePKR: null,
+        compareAtPricePKR: p.compareAtPricePKR ?? null,
         stock: null,
         warrantyMonths: p.warrantyMonths,
         weightKg: p.weightKg,
@@ -302,6 +302,18 @@ for (const p of buildProductDocs(brandIdBySlug)) {
     );
     if (backfilled.modifiedCount > 0) {
       console.log(`price set: ${p.slug} -> Rs. ${p.pricePKR}`);
+    }
+  }
+  // Backfill the compare-at (struck-through) price ONLY where the DB value
+  // is still null, an admin-set value is never overwritten. This fixes the
+  // Batch 1 earbuds, whose compare-at prices were seeded as null.
+  if (p.compareAtPricePKR != null) {
+    const backfilledCompare = await Product.updateOne(
+      { slug: p.slug, compareAtPricePKR: null },
+      { $set: { compareAtPricePKR: p.compareAtPricePKR } }
+    );
+    if (backfilledCompare.modifiedCount > 0) {
+      console.log(`compare-at set: ${p.slug} -> Rs. ${p.compareAtPricePKR}`);
     }
   }
   if (p.weightKg != null) {
