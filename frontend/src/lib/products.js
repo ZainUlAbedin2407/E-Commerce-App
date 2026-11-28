@@ -1,33 +1,25 @@
 // AI Communication, local product seed (V3, 27 Nov 2026; Batch 1, 28 Nov 2026).
 //
-// TWENTY-ONE products: the 4 heroes plus Buds Pro 9 and the GREAT NICE
-// speaker (from Zain's WhatsApp review screenshots, 27 Nov), plus 7 earbuds
-// from Zain's WhatsApp catalog screenshots (Batch 1, 28 Nov): Urpin UA-30
-// Pro, Urpin UA-50 Pro, Urpin UA-60 Pro, Buds Pro 2, Buds Pro 3, Buds
-// Pro 4, Buds Pro 5, plus 9 power banks from the catalog (Batch 2, 28 Nov):
-// OMXMO OX-PD01, OX-PD02, OX-PD03, OX-PD10 (replaces the old seed entry),
-// OX-PD11, OX-PD12, OX-PD13, OX-PD15, OX-PD16. URPIN PD18 10000mAh
-// (Rs 2,500, was 3,000) is in the catalog list but its folder/images were
-// NOT in the Batch 2 RAR, so it is not seeded yet.
+// SIXTEEN products, all from Zain's WhatsApp catalog (Batches 1-2,
+// 28 Nov 2026): 7 earbuds (Urpin UA-30/50/60 Pro, Buds Pro 2/3/4/5)
+// plus 9 power banks (OMXMO OX-PD01/02/03/10/11/12/13/15/16).
+// The 5 original seed products (DV-1089, SY-777, i20 ULTRA MAX SUIT,
+// Buds Pro 9, GREAT NICE GTS-2190) were REMOVED 28 Nov 2026 on Zain's
+// instruction: they were samples with estimated info. DV-1089 returns
+// with the Speakers batch (its review is re-added then); SY-777 and i20
+// return with their category batches; Buds Pro 9 and GREAT NICE were
+// never in the catalog (one-off stock) and do not return.
+// URPIN PD18 10000mAh (Rs 2,500, was 3,000) is in the catalog list but
+// its folder/images were NOT in the Batch 2 RAR, so it is not seeded yet.
 // This file is the local fallback catalogue AND the seed source -
 // scripts/seed.mjs inserts these exact records into MongoDB, so the two
 // must stay in sync.
 //
-// PRICES (all editable in admin; Zain replaces them with his own):
-// - DV-1089 Rs 1,250: Zain's REAL sale price from his WhatsApp chat
-//   ("1250 ka parega", customer bought one). It replaces the old
-//   researched band of Rs 3,000-3,500, which was wrong for this product.
-// - i20 Rs 2,500 (his confirmed price), OX-PD10 Rs 3,200, SY-777 Rs 1,500:
-//   researched bands from 26 Nov 2026, unchanged.
-// - Buds Pro 9 Rs 2,300: band midpoint. PK online stores list it at
-//   Rs 1,743 (Lumelanes), 1,850 (pkmall), 1,998 (AbrishMart), 2,346
-//   (Everyco), 2,399 (AS Gadgets), 2,533 (ASM VEO), 2,850 (airpods.pk)
-//  , band 1,743-2,850, midpoint ~2,300. Checked 27 Nov 2026.
-// - GREAT NICE GTS-2190 Rs 1,750: no exact listing found for this model.
-//   Comparable 4-inch Greatnice party speakers on shoppersstop.pk:
-//   GTS-2118 4 inch Rs 1,508, GTS-2349 Rs 1,615, GTS-2571 Rs 1,200,
-//   GTS-2009 Rs 2,306, plus a GTS-2309 sold retail at Rs 1,500 -
-//   band 1,200-2,306, midpoint ~1,750. Checked 27 Nov 2026.
+// PRICES (all editable in admin; Zain replaces them with his own).
+// Catalog prices come only from Zain's WhatsApp catalog screenshots.
+// The 5 removed seed products' old researched prices are gone with them.
+// OX-PD10 catalog price is Rs 2,600 (was 3,000); its old seed price
+// Rs 3,200 was a researched estimate, corrected 28 Nov 2026.
 // - Batch 1 earbuds (28 Nov 2026): Zain's WhatsApp catalog prices, sale
 //   price first, struck-through compare-at second:
 //   UA-30 Pro Rs 2,150 (was 2,400), UA-50 Pro Rs 2,250 (was 2,500),
@@ -40,7 +32,8 @@
 //
 // WEIGHTS and WARRANTY are sensible examples only (Zain, 27 Nov 2026:
 // "not tight", he replaces them when he adds his real products).
-// Warranty 0 = checking warranty only, for all eleven.
+// Warranty 0 = checking warranty only. 6 months warranty: all 9 power
+// banks and the 3 Urpin earbuds (per Zain, 28 Nov 2026).
 // Specs contain ONLY facts visible on the product / box in the photo or
 // transcribed from Zain's WhatsApp catalog detail screenshots (Batch 1).
 // URPIN products ARE seeded now (Batch 1, 28 Nov 2026).
@@ -60,14 +53,9 @@ export const CATEGORIES = [
 // on every product and always matches the Brand name.
 export const BRANDS = [
   { name: "OMXMO", slug: "omxmo", logo: "", description: "" },
-  { name: "DV", slug: "dv", logo: "", description: "" },
-  { name: "SY", slug: "sy", logo: "", description: "" },
-  { name: "i20", slug: "i20", logo: "", description: "" },
-  { name: "Buds Pro 9", slug: "buds-pro-9", logo: "", description: "" },
-  { name: "GREAT NICE", slug: "great-nice", logo: "", description: "" },
   // Batch 1 (28 Nov 2026, from Zain's WhatsApp catalog screenshots):
-  // URPIN is the brand on the box. Buds Pro 2 / Buds Pro 5 follow the
-  // Buds Pro 9 precedent (brand = product name, no brand invented).
+  // URPIN is the brand on the box. Buds Pro 2 / 3 / 4 / 5 use the
+  // product name as the brand (that is what the box says, no brand invented).
   { name: "URPIN", slug: "urpin", logo: "", description: "" },
   { name: "Buds Pro 2", slug: "buds-pro-2", logo: "", description: "" },
   { name: "Buds Pro 3", slug: "buds-pro-3", logo: "", description: "" },
@@ -355,142 +343,6 @@ export const PRODUCTS = [
       "/products/omxmo-ox-pd16-2.jpg",
       "/products/omxmo-ox-pd16-3.jpg",
     ],
-    isFeatured: false,
-    isNew: true,
-  },
-  // ---- Hero 2: Speaker ----
-  {
-    id: "dv-1089",
-    slug: "dv-1089",
-    name: "DV-1089 Wireless Speaker",
-    brand: "DV",
-    brandSlug: "dv",
-    brandId: null,
-    model: "DV-1089",
-    category: "speakers",
-    pricePKR: 1250,
-    compareAtPricePKR: null,
-    stock: null,
-    warrantyMonths: 0,
-    weightKg: 0.8,
-    shortDesc: "Wireless speaker with phone-holder slot and solar panel back.",
-    specs: {
-      "Phone holder": "Top slot for your phone",
-      "Solar panel": "Solar panel on back",
-      Inputs: "FM radio / USB / TF card",
-      Colours: "Black / Blue-grey",
-      Strap: "Carry strap",
-    },
-    features: [],
-    images: [
-      "/products/dv-1089-box.jpg",
-      "/products/dv-1089-front.jpg",
-      "/products/dv-1089-solar.jpg",
-      "/products/dv-1089-blue.jpg",
-    ],
-    isFeatured: true,
-    isNew: true,
-  },
-  // ---- Hero 3: Speaker ----
-  {
-    id: "sy-777",
-    slug: "sy-777",
-    name: "SY-777 Wireless Speaker",
-    brand: "SY",
-    brandSlug: "sy",
-    brandId: null,
-    model: "SY-777",
-    category: "speakers",
-    pricePKR: 1500,
-    compareAtPricePKR: null,
-    stock: null,
-    warrantyMonths: 0,
-    weightKg: 0.4,
-    shortDesc: "Small square wireless speaker with RGB LED ring.",
-    specs: { Lights: "RGB LED ring", Colours: "Blue / Lime-green / Orange", Strap: "Carry strap" },
-    features: [],
-    images: ["/products/sy-777-blue.jpg", "/products/sy-777-colours.jpg"],
-    isFeatured: true,
-    isNew: true,
-  },
-  // ---- Hero 4: Smartwatch ----
-  {
-    id: "i20-ultra-max-suit",
-    slug: "i20-ultra-max-suit",
-    name: "i20 ULTRA MAX SUIT Smartwatch, 10 in 1 Set",
-    brand: "i20",
-    brandSlug: "i20",
-    brandId: null,
-    model: "i20 ULTRA MAX SUIT BIG 2.3",
-    category: "smartwatches",
-    pricePKR: 2500,
-    compareAtPricePKR: null,
-    stock: null,
-    warrantyMonths: 0,
-    weightKg: 0.5,
-    shortDesc: "Watch + earphones together in one box, 10 in 1 set.",
-    specs: { Display: "BIG 2.3 Infinite Display", Set: "10 in 1 (watch + earphones)" },
-    features: [],
-    images: ["/products/i20-ultra-max-suit.png"],
-    isFeatured: true,
-    isNew: true,
-  },
-  // ---- New: Earbuds (from the WhatsApp review screenshot) ----
-  {
-    id: "buds-pro-9",
-    slug: "buds-pro-9",
-    name: "Buds Pro 9 Wireless Earbuds",
-    // The brand is "Buds Pro 9": that is what the box says. No brand
-    // is invented for this product.
-    brand: "Buds Pro 9",
-    brandSlug: "buds-pro-9",
-    brandId: null,
-    model: "Buds Pro 9",
-    category: "earbuds",
-    pricePKR: 2300,
-    compareAtPricePKR: null,
-    stock: null,
-    warrantyMonths: 0,
-    weightKg: 0.2,
-    shortDesc: "TWS earbuds with ANC/ENC Double Dark Noise Reduction and touch control.",
-    specs: {
-      "ANC/ENC": "Double Dark Noise Reduction",
-      Control: "Touch Control",
-      Colours: "Beige / White and Black",
-    },
-    features: [],
-    // Cropped from the review screenshot by the foundation agent.
-    images: ["/products/buds-pro-9-beige.jpg", "/products/buds-pro-9-black.jpg"],
-    isFeatured: true,
-    isNew: true,
-  },
-  // ---- New: Party speaker (from the WhatsApp review screenshot) ----
-  {
-    id: "great-nice-gts-2190",
-    slug: "great-nice-gts-2190",
-    name: "GREAT NICE Wireless Party Speaker GTS-2190",
-    brand: "GREAT NICE",
-    brandSlug: "great-nice",
-    brandId: null,
-    model: "GTS-2190",
-    category: "speakers",
-    pricePKR: 1750,
-    compareAtPricePKR: null,
-    stock: null,
-    warrantyMonths: 0,
-    weightKg: 2.5,
-    shortDesc: "4 inch wireless party speaker with LED lights and big sound.",
-    specs: {
-      Size: "4 inch",
-      Lights: "LED lights",
-      Sound: "Big sound",
-      Speakers: "Dual speakers",
-      LED: "Blue / Green LED",
-      Model: "GTS-2190",
-    },
-    features: [],
-    // Cropped from the review screenshot by the foundation agent.
-    images: ["/products/great-nice-speaker.jpg", "/products/great-nice-box.jpg"],
     isFeatured: false,
     isNew: true,
   },

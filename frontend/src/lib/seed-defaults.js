@@ -18,11 +18,11 @@ export const DEFAULT_BRANDS = BRANDS.map((b) => ({ ...b }));
 export const DEFAULT_SECTIONS = [
   {
     type: "hero",
-    title: "DV-1089 Wireless Speaker",
+    title: "OMXMO OX-PD13 50000mAh Power Bank",
     visible: true,
     order: 0,
     sourceType: "manual",
-    productIds: ["dv-1089"],
+    productIds: ["omxmo-ox-pd13"],
     rule: { kind: "new", category: "", tag: "", windowDays: 30, limit: 8 },
   },
   {
@@ -101,43 +101,16 @@ export const DEFAULT_FILTERS = [
   { key: "capacity", label: "Capacity", type: "list", source: "spec:Capacity", active: true, sortOrder: 5 },
 ];
 
-// The 3 seed reviews, in the customers' EXACT words from the V3 plan
-// (sec 6), copied from the plan file, not re-transcribed from the
-// screenshots. Customer names are not visible in the screenshots, so
-// the name is "Customer"; Zain can edit the name in admin.
-// All three: source "whatsapp", verified true, status "approved".
-export const DEFAULT_REVIEWS = [
-  {
-    productSlug: "buds-pro-9",
-    name: "Customer",
-    rating: 5,
-    title: "",
-    body: "Bhai earbuds mil gaye hain. Dono check kiye hain, sound quality aur bass price ke hisab se bohat achi hai. Battery timing bhi zabardast chal rahi hai. Bohot shukriya!",
-    source: "whatsapp",
-    verified: true,
-    status: "approved",
-  },
-  {
-    productSlug: "great-nice-gts-2190",
-    name: "Customer",
-    rating: 5,
-    title: "",
-    body: "W.Salam Ji Bhai Parcel Shaam me he deliver hogaya tha or Speaker bohot acha nikla, jitna expect kiya tha usse behtar sound or quality hai. Kisi or cheez ki is category me zaroorat hui to aap se hi lenge Insha Allah.",
-    source: "whatsapp",
-    verified: true,
-    status: "approved",
-  },
-  {
-    productSlug: "dv-1089",
-    name: "Customer",
-    rating: 5,
-    title: "",
-    body: "Bhai bohot acha speaker hai and sound bhi kafi acha hai iska.",
-    source: "whatsapp",
-    verified: true,
-    status: "approved",
-  },
-];
+// Seed reviews: EMPTY since 28 Nov 2026. The 3 WhatsApp reviews
+// (Buds Pro 9, GREAT NICE GTS-2190, DV-1089) were removed together with
+// their products on Zain's instruction (samples with estimated info).
+// Their exact words are kept in the V3 plan (sec 6) and in MEMORY.md.
+// DV-1089's review is re-added when DV-1089 returns with the Speakers
+// batch; Buds Pro 9 and GREAT NICE were never in the catalog (one-off
+// stock) and do not return, so their reviews do not return either.
+// New reviews come from the website review form (verified against a
+// Delivered order) or from admin adding WhatsApp reviews by hand.
+export const DEFAULT_REVIEWS = [];
 
 // Settings defaults (see src/models/Settings.js). paymentAccounts are
 // ALL EMPTY by default; Zain fills them himself in admin settings.
