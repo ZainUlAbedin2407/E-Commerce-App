@@ -1,7 +1,9 @@
-// AI Communication, local product seed (V3, 27 Nov 2026).
+// AI Communication, local product seed (V3, 27 Nov 2026; Batch 1, 28 Nov 2026).
 //
-// SIX products: the 4 heroes plus Buds Pro 9 and the GREAT NICE speaker,
-// which came from Zain's WhatsApp review screenshots (V3 plan sec 6).
+// ELEVEN products: the 4 heroes plus Buds Pro 9 and the GREAT NICE speaker
+// (from Zain's WhatsApp review screenshots, 27 Nov), plus 5 earbuds from
+// Zain's WhatsApp catalog screenshots (Batch 1, 28 Nov): Urpin UA-30 Pro,
+// Urpin UA-50 Pro, Urpin UA-60 Pro, Buds Pro 2, Buds Pro 5.
 // This file is the local fallback catalogue AND the seed source -
 // scripts/seed.mjs inserts these exact records into MongoDB, so the two
 // must stay in sync.
@@ -21,12 +23,20 @@
 //   GTS-2118 4 inch Rs 1,508, GTS-2349 Rs 1,615, GTS-2571 Rs 1,200,
 //   GTS-2009 Rs 2,306, plus a GTS-2309 sold retail at Rs 1,500 -
 //   band 1,200-2,306, midpoint ~1,750. Checked 27 Nov 2026.
+// - Batch 1 earbuds (28 Nov 2026): Zain's WhatsApp catalog prices, sale
+//   price first, struck-through compare-at second:
+//   UA-30 Pro Rs 2,150 (was 2,400), UA-50 Pro Rs 2,250 (was 2,500),
+//   UA-60 Pro Rs 2,350 (was 2,600), Buds Pro 2 Rs 1,000 (was 1,300),
+//   Buds Pro 5 Rs 1,300 (was 1,600). Buds Pro 3 (Rs 1,100, was 1,400)
+//   and Buds Pro 4 (Rs 1,200, was 1,500) are NOT seeded: their RAR
+//   folder holds only Gemini-generated images, no real product photos.
 //
 // WEIGHTS and WARRANTY are sensible examples only (Zain, 27 Nov 2026:
 // "not tight", he replaces them when he adds his real products).
-// Warranty 0 = checking warranty only, for all six.
-// Specs contain ONLY facts visible on the product / box in the photo.
-// No URPIN product is seeded here; no URPIN product is in the 6.
+// Warranty 0 = checking warranty only, for all eleven.
+// Specs contain ONLY facts visible on the product / box in the photo or
+// transcribed from Zain's WhatsApp catalog detail screenshots (Batch 1).
+// URPIN products ARE seeded now (Batch 1, 28 Nov 2026).
 
 export const CATEGORIES = [
   { slug: "earbuds", name: "Earbuds", blurb: "Wireless earbuds, original, sealed pack." },
@@ -48,6 +58,12 @@ export const BRANDS = [
   { name: "i20", slug: "i20", logo: "", description: "" },
   { name: "Buds Pro 9", slug: "buds-pro-9", logo: "", description: "" },
   { name: "GREAT NICE", slug: "great-nice", logo: "", description: "" },
+  // Batch 1 (28 Nov 2026, from Zain's WhatsApp catalog screenshots):
+  // URPIN is the brand on the box. Buds Pro 2 / Buds Pro 5 follow the
+  // Buds Pro 9 precedent (brand = product name, no brand invented).
+  { name: "URPIN", slug: "urpin", logo: "", description: "" },
+  { name: "Buds Pro 2", slug: "buds-pro-2", logo: "", description: "" },
+  { name: "Buds Pro 5", slug: "buds-pro-5", logo: "", description: "" },
 ];
 
 export function getCategory(slug) {
@@ -224,6 +240,197 @@ export const PRODUCTS = [
     features: [],
     // Cropped from the review screenshot by the foundation agent.
     images: ["/products/great-nice-speaker.jpg", "/products/great-nice-box.jpg"],
+    isFeatured: false,
+    isNew: true,
+  },
+  // ---- Batch 1 (28 Nov 2026): Earbuds from Zain's WhatsApp catalog ----
+  // Prices are Zain's catalog prices (first number = sale price, second
+  // number = struck-through compare-at price). Descriptions and specs are
+  // transcribed from the catalog detail screenshots he sent (28 Nov).
+  // Buds Pro 3 and Buds Pro 4 are NOT added here: their RAR folder holds
+  // only Gemini-generated images, no real product photos. Zain is asked
+  // for real photos before those two are listed.
+  {
+    id: "urpin-ua-30-pro",
+    slug: "urpin-ua-30-pro",
+    name: "Urpin UA-30 Pro Premium Earbuds",
+    brand: "URPIN",
+    brandSlug: "urpin",
+    brandId: null,
+    model: "UA-30 Pro",
+    category: "earbuds",
+    pricePKR: 2150,
+    compareAtPricePKR: 2400,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "Premium earbuds with ENC noise reduction, Bluetooth 5.3 and up to 5 hours playtime.",
+    specs: {
+      Sound: "High-fidelity audio drivers, deep bass, clear mids, crisp highs",
+      "Noise reduction": "ENC Environmental Noise Cancellation",
+      Bluetooth: "5.3, stable, instant connection, lower power consumption",
+      Design: "Ergonomic, secure and comfortable fit for all-day wear",
+      Controls: "Smart touch controls for music, volume and calls",
+      Battery: "Up to 5 hours playtime on a single charge, extended via charging case",
+      Compatibility: "Works with iOS and Android devices",
+    },
+    features: [],
+    images: [
+      "/products/urpin-ua-30-pro-1.jpg",
+      "/products/urpin-ua-30-pro-2.jpg",
+      "/products/urpin-ua-30-pro-3.jpg",
+      "/products/urpin-ua-30-pro-4.jpg",
+      "/products/urpin-ua-30-pro-5.jpg",
+      "/products/urpin-ua-30-pro-6.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "urpin-ua-50-pro",
+    slug: "urpin-ua-50-pro",
+    name: "Urpin UA-50 Pro Wireless Earbuds",
+    brand: "URPIN",
+    brandSlug: "urpin",
+    brandId: null,
+    model: "UA-50 Pro",
+    category: "earbuds",
+    pricePKR: 2250,
+    compareAtPricePKR: 2500,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "Premium earbuds with Quad-Mic ENC, Bluetooth 5.4 and 24-hour total playtime.",
+    specs: {
+      Playtime: "24-hour total playtime with portable charging case",
+      "Noise reduction": "Advanced Quad-Mic ENC for crystal-clear calls",
+      Bluetooth: "5.4, instant pairing, stable connection, ultra-low latency for gaming",
+      Design: "Ergonomic, secure fit for daily wear and workouts",
+      Charging: "Touch control and Type-C fast charging",
+      "Water resistant": "Built to withstand sweat and daily splash exposure",
+    },
+    features: [],
+    images: [
+      "/products/urpin-ua-50-pro-1.jpg",
+      "/products/urpin-ua-50-pro-2.jpg",
+      "/products/urpin-ua-50-pro-3.jpg",
+      "/products/urpin-ua-50-pro-4.jpg",
+      "/products/urpin-ua-50-pro-5.jpg",
+      "/products/urpin-ua-50-pro-6.jpg",
+      "/products/urpin-ua-50-pro-7.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "urpin-ua-60-pro",
+    slug: "urpin-ua-60-pro",
+    name: "Urpin UA-60 Pro Wireless Earbuds",
+    brand: "URPIN",
+    brandSlug: "urpin",
+    brandId: null,
+    model: "UA-60 Pro",
+    category: "earbuds",
+    pricePKR: 2350,
+    compareAtPricePKR: 2600,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "Premium studio sound earbuds with Dual Mic ENC, 20 hours playtime and Type-C rapid charging.",
+    specs: {
+      Driver: "10mm Dynamic Bass Driver, deep bass and rich sound",
+      "Noise reduction": "Dual Mic ENC for clear, distortion-free calls",
+      Playtime: "20 hours, extended standby time",
+      Charging: "Type-C rapid charging",
+      Bluetooth: "V5.3, fast, stable, low-latency",
+      Design: "Lightweight, comfortable fit for long listening sessions",
+      Controls: "Smart touch controls for music, calls and volume",
+      Colours: "White, Black, Beige, Blue",
+    },
+    features: [],
+    images: [
+      "/products/urpin-ua-60-pro-1.jpg",
+      "/products/urpin-ua-60-pro-2.jpg",
+      "/products/urpin-ua-60-pro-3.jpg",
+      "/products/urpin-ua-60-pro-4.jpg",
+      "/products/urpin-ua-60-pro-5.jpg",
+      "/products/urpin-ua-60-pro-6.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "buds-pro-2",
+    slug: "buds-pro-2",
+    name: "Buds Pro 2 Wireless Earbuds",
+    // The brand is "Buds Pro 2": that is what the box says, same as
+    // Buds Pro 9. No brand is invented for this product.
+    brand: "Buds Pro 2",
+    brandSlug: "buds-pro-2",
+    brandId: null,
+    model: "Buds Pro 2",
+    category: "earbuds",
+    pricePKR: 1000,
+    compareAtPricePKR: 1300,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "High-fidelity earbuds with Qi wireless charging support and USB-C rapid charging.",
+    specs: {
+      Connectivity: "Latest-generation wireless, pairs with iOS, Android and Windows",
+      Audio: "Precision-tuned drivers, clear highs, balanced bass response",
+      Design: "Ergonomic, lightweight, secure fit for all-day comfort",
+      Charging: "USB-C rapid charging",
+      Compatibility: "Qi-certified wireless chargers",
+      Build: "Premium glossy finish, compact pocket-friendly charging case",
+    },
+    features: [],
+    images: [
+      "/products/buds-pro-2-1.jpg",
+      "/products/buds-pro-2-2.jpg",
+      "/products/buds-pro-2-3.jpg",
+      "/products/buds-pro-2-4.jpg",
+      "/products/buds-pro-2-5.jpg",
+      "/products/buds-pro-2-6.jpg",
+    ],
+    isFeatured: false,
+    isNew: true,
+  },
+  {
+    id: "buds-pro-5",
+    slug: "buds-pro-5",
+    name: "Buds Pro 5 Wireless Earbuds",
+    // The brand is "Buds Pro 5": that is what the box says, same as
+    // Buds Pro 9. No brand is invented for this product.
+    brand: "Buds Pro 5",
+    brandSlug: "buds-pro-5",
+    brandId: null,
+    model: "Buds Pro 5",
+    category: "earbuds",
+    pricePKR: 1300,
+    compareAtPricePKR: 1600,
+    stock: null,
+    warrantyMonths: 0,
+    weightKg: 0.2,
+    shortDesc: "Premium earbuds with Hybrid ANC/ENC, diamond-cut metallic texture and dual-device connection.",
+    specs: {
+      Sound: "High-fidelity studio sound quality",
+      "Noise cancellation": "Hardware-level Hybrid Noise Cancellation (ANC/ENC support)",
+      Connection: "Smart Dual-Device connection for seamless switching",
+      Charging: "Type-C fast charging, long-lasting battery backup",
+      Design: "Diamond-cut metallic texture, stands out from standard plastic clones",
+      Code: "ZEE-BUDS05",
+    },
+    features: [],
+    images: [
+      "/products/buds-pro-5-1.jpg",
+      "/products/buds-pro-5-2.jpg",
+      "/products/buds-pro-5-3.jpg",
+      "/products/buds-pro-5-4.jpg",
+      "/products/buds-pro-5-5.jpg",
+      "/products/buds-pro-5-6.jpg",
+      "/products/buds-pro-5-7.jpg",
+    ],
     isFeatured: false,
     isNew: true,
   },
